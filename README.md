@@ -1,5 +1,5 @@
 # JavaOffer
-慕课网剑指Java面试-Offer直通车,笔记整理到简书中
+慕课网剑指Java面试-Offer直通车,笔记整理到简书中,Sort.java排序算法整理，package leetcode是leetcode上的题目解答，package SwordToOffer是剑指offer的java版解答
 
 [1.剑指JavaOffer-网络相关](https://www.jianshu.com/p/3322c623ffa9)
 
