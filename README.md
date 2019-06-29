@@ -1,36 +1,27 @@
 # JavaOffer
-慕课网剑指Java面试-Offer直通车
+慕课网剑指Java面试-Offer直通车,笔记整理到简书中
+
+[1.剑指JavaOffer-网络相关](https://www.jianshu.com/p/3322c623ffa9)
 
 
-TCP滑动窗口
+[2.剑指JavaOffer-数据库](https://www.jianshu.com/p/5a313f97a44a)
 
-RTT和RTO
-RTT：发送一个数据包到收到对应的ACK，所花费的时间
-RTO：重传时间间隔
+[3.剑指JavaOffer-redis](https://www.jianshu.com/p/644bdf8f24a8)
 
-TCP使用滑动窗口做流量控制与乱序重排
+[4.剑指JavaOffer-Linux](https://www.jianshu.com/p/11f0cde5f006)
 
+[5.剑指JavaOffer-JVM](https://www.jianshu.com/p/1dd80229ba3e)
 
+[6.剑指JavaOffer-内存回收](https://www.jianshu.com/p/3567786f4f6d)
 
-Redis
+[7.剑指JavaOffer-多线程与并发](https://www.jianshu.com/p/b667606a6a08)
 
-Memcache和redis的区别
+[8.剑指JavaOffer-多线程和并发（原理）](https://www.jianshu.com/p/598d470ac15f)
 
-Memcache：代码层次类似Hash
-支持简单数据类型
-不支持数据持久化存储，服务器宕机数据将无法保存
-不支持主从，mysql那种主从同步
-不支持分片，大数据分布到多个物理节点
+[9.剑指JavaOffer-常用类库及技巧](https://www.jianshu.com/p/20d17dfad5f7)
 
-redis
-数据类型丰富
-支持数据磁盘持久化存储
-支持主从
-支持分片
+[10.剑指JavaOffer-Spring](https://www.jianshu.com/p/b65a5789537b)
 
-redis为什么那么快
-完全基于内存，绝大部分请求是纯粹的内存操作，执行效率高
-数据结构简单，对数据操作也简单
-采用单线程，单线程也能处理高并发请求，想多核也可启动多实例
-使用多路I/O复用模型，非阻塞IO
+[11.剑指JavaOffer-HashMap](https://www.jianshu.com/p/309f0dae9f35)
+
 
