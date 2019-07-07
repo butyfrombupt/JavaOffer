@@ -4,6 +4,7 @@ import java.util.*;
 
 
 public class Main {
+
     public static void main(String[] args) {
 //        int [] nums = new int[]{6,7};
 //        //System.out.println(reConstructBinaryTree(nums,nums1));
@@ -23,12 +24,108 @@ public class Main {
         //System.out.println(FindNumsAppearOnce(nums,nums,nums));
         String s = "a";
         String s1=".";
-        System.out.println(maxInWindows(nums,3));
-
+        //System.out.println(integerBreak(6));
+        printOneToN(2);
     }
 
+    /*
+    面试题 3
+    题目 长度为n数组中，所有数字在0 - n-1 范围内，某些数字是重复的，找出一个重复的数组
+    输入：{2,3,1,0,2,5,3} 长度 7
+    输出：2或3
+    第一种方法：
+    数组排序，找出相邻相等的就是重复数字 时间复杂度nlogn 哈希表也可以 空间换时间了
+    第二种方法：
+    首先无重复数字的话，下标即是数字本身，从头到尾扫描，举例说明
+    2，3，1，0，2
+    下标0与2不相等，与在2的数字交换
+    1，3，2，0，2
+    下标0仍然与1不相等，与在1的数字交换
+    3，1，2，0，2
+    继续
+    0，1，2，3，2
+    此时扫描 0 1 2 3 下标和数字都相等，扫到第二个2的时候，发现 下标 2的位置也是2了，说明重复
+     */
+    public static boolean duplicate(int numbers[], int length, int[] duplication) {//数组中重复的数字
+        /*
+        if(numbers == null || numbers.length == 0) return false;
+        Arrays.sort(numbers);
+        boolean flag=false;
+        int index=0;
+        for(int i=1;i<numbers.length;i++){
+            if(numbers[i]==numbers[i-1]){
+                flag=true;
+                duplication[index++]=numbers[i];
+            }
+        }
+        return flag;
+        */
+        if(numbers == null || numbers.length == 0) return false;
+        for(int i=0;i<length;i++) {
+            if (numbers[i] < 0 || numbers[i] > length - 1) {
+                return false;
+            }
+        }
+        for(int i=0;i<length;i++){
+            while (numbers[i]!=i){
+                if(numbers[i]==numbers[numbers[i]]){
+                    duplication[0]=numbers[i];
+                    return true;
+                }
+                int temp=numbers[i];
+                numbers[i]=numbers[temp];
+                numbers[temp]=temp;
+            }
+        }
+        return false;
+    }
 
+    /*
+    给定一个包含 n + 1 个整数的数组 nums，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。假设只有一个重复的整数，找出这个重复的数。
+    不能更改原数组（假设数组是只读的）。只能使用额外的 O(1) 的空间。时间复杂度小于 O(n2) 。
+    数组中只有一个重复的数字，但它可能不止重复出现一次。思想还是一个萝卜一个坑，举例说明
+    2,3,5,4,3,2,6,7   1~7分两段1~4,5~7 而1~4这范围内的数字出现了5次 重复数字肯定在此了
+     */
+    public static int findDuplicate(int[] nums) {//不修改数组找出数组中重复的数字
+        int start = 1;
+        int end = nums.length - 1;
+        while(start <= end){
+            int mid = (start + end) / 2;
+            int count = countRange(nums,start,mid);//统计数字1到mid中间 数字的个数，大于则说明重复元素在此区间
+            if(start == end){
+                if(count > 1)
+                    return start;
+            }
+            if(count > mid - start + 1) {//在左边
+                end = mid;
+            }
+            else{
+                start = mid + 1;
+            }
+        }
+        return -1;
+    }
 
+    private static int countRange(int[] nums, int start, int end) {
+        int count = 0;
+        for(int i = 0;i<nums.length;i++){
+            if(nums[i] >=start && nums[i] <= end)
+                ++count;
+        }
+        return count;
+    }
+
+    /*
+    面试题 4
+    在一个二维数组中（每个一维数组的长度相同），每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序
+    1 2 8 9
+    2 4 9 12
+    4 7 10 13
+    6 8 11 15  target 7
+    第一种方法按行或者列扫描，再二分查找
+    第二种 每次找右上角或者左下角
+    本例是找右上角 第一个9 7<9 则9这一列不用看了，8这列同理，2<7 按行继续找
+     */
     public boolean Find(int target, int [][] array) {//二维数组中的查找
 
 //        Method 1:
@@ -50,21 +147,33 @@ public class Main {
 //        }
 //        return false;
 //      Method 2
-        int len=array.length-1;
-        int index=0;
-        while((len>=0)&&(index<=array[0].length-1)){
-            if(array[len][index]>target){
-                len--;
-            }
-            else if(target>array[len][index]){
-                index++;
-            }
-            else {
-                return true;
+        boolean flag = false;
+        int rows = array.length;//行数
+        if(rows == 0)
+            return flag;
+        int cols = array[0].length;//列数
+        if(array != null){
+            int row = 0;
+            int col = cols - 1;//右上角那个数
+            while (row < rows && col >=0){
+                if(array[row][col] > target){
+                    col--;
+                }
+                else if(array[row][col] < target){
+                    row++;
+                }
+                else{
+                    flag = true;
+                    break;
+                }
             }
         }
-        return false;
+        return flag;
     }
+    /*
+    面试题 5
+    把空格换成%20
+     */
     public static String replaceSpace(StringBuffer str) {//替换空格
         String res="";
         char c[]=str.toString().toCharArray();
@@ -78,40 +187,10 @@ public class Main {
         }
         return res;
     }
-    public static boolean duplicate(int numbers[], int length, int[] duplication) {//数组中重复的数字
-        /*
-        if(numbers == null || numbers.length == 0) return false;
-        Arrays.sort(numbers);
-        boolean flag=false;
-        int index=0;
-        for(int i=1;i<numbers.length;i++){
-            if(numbers[i]==numbers[i-1]){
-                flag=true;
-                duplication[index++]=numbers[i];
-            }
-        }
-        return flag;
-        */
-        if(numbers == null || numbers.length == 0) return false;
-        for(int i=0;i<length;i++) {
-            if (numbers[i] < 0 || numbers[i] > length - 1) {
-                return false;
-            }
-        }
-            for(int i=0;i<length;i++){
-                while (numbers[i]!=i){
-                    if(numbers[i]==numbers[numbers[i]]){
-                        duplication[0]=numbers[i];
-                        return true;
-                    }
-                    int temp=numbers[i];
-                    numbers[i]=numbers[temp];
-                    numbers[temp]=temp;
-                }
-            }
-        return false;
-    }
-
+    /*
+    面试题 6
+    借助栈
+     */
     public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {//从尾到头打印链表
         Stack<Integer> stack = new Stack<>();
         while (listNode!=null){
@@ -125,43 +204,59 @@ public class Main {
         return list;
 
     }
+    /*
+    面试题 7
+    重建二叉树，给一个前序和一个中序，建立二叉树
+    前序：1 2 4 7 3 5 6 8  中序 4 7 2 1 5 3 8 6 
+    树：                       1
+                           2       3
+                         4       5   6
+                          7         8
+     */
     public TreeNode reConstructBinaryTree(int [] pre,int [] in) {//重建二叉树
         if(pre.length==0||in.length==0)
             return null;
         return buildTree(pre,in,0,pre.length-1,0,in.length-1);
 
     }
-
-    private TreeNode buildTree(int[] pre, int[] in, int startPre, int endPre, int startIn, int endIn) {
-        if(startPre>endPre||startIn>endIn)
+    
+    private TreeNode buildTree(int[] preOrder, int[] inOrder, int startPreOrder, int endPreOrder, int startInOrder, int endInOrder) {
+        if(startPreOrder>endPreOrder||startInOrder>endInOrder)
             return null;
-        TreeNode root=new TreeNode(pre[startPre]);
-        for(int i=startIn;i<=endIn;i++){
-            if(in[i]==pre[startPre]){
-                int leftLen=i-startIn;//左子树长度
-                int leftPreEnd=startPre+leftLen;
-                root.left=buildTree(pre,in,startPre+1,startPre+i-startIn,startIn,i-1);
-                root.right=buildTree(pre,in,i-startIn+startPre+1,endPre,i+1,endIn);
+        TreeNode root=new TreeNode(preOrder[startPreOrder]);
+        for(int i=startInOrder;i<=endInOrder;i++){
+            if(inOrder[i]==preOrder[startPreOrder]){
+                int leftLen=i-startInOrder;//左子树长度
+                root.left=buildTree(preOrder,inOrder,startPreOrder+1,startPreOrder+i-startInOrder,startInOrder,i-1);
+                root.right=buildTree(preOrder,inOrder,i-startInOrder+startPreOrder+1,endPreOrder,i+1,endInOrder);
                 break;
             }
         }
         return root;
     }
-
-//    public TreeLinkNode GetNext(TreeLinkNode pNode)//二叉树的下一个节点
-//    {
-//        if(pNode==null) return null;
-//        if(pNode.right!=null){    //如果有右子树，则找右子树的最左节点
-//            pNode = pNode.right;
-//            while(pNode.left!=null) pNode = pNode.left;
-//            return pNode;
-//        }
-//        while(pNode.next!=null){ //没右子树，则找第一个当前节点是父节点左孩子的节点
-//            if(pNode.next.left==pNode) return pNode.next;
-//            pNode = pNode.next;
-//        }
-//        return null;   //退到了根节点仍没找到，则返回null
-//    }
+    /*
+    面试题 8
+    找出中序遍历中的下一个节点，next指向的是父节点
+     */
+    public TreeLinkNode GetNext(TreeLinkNode pNode)//二叉树的下一个节点
+    {
+        if(pNode==null) return null;
+        if(pNode.right!=null){    //如果有右子树，则找右子树的最左节点
+            pNode = pNode.right;
+            while(pNode.left!=null) pNode = pNode.left;
+            return pNode;
+        }
+        while(pNode.next!=null){ //没右子树，则找第一个当前节点是父节点左孩子的节点
+            if(pNode.next.left==pNode) return pNode.next;
+            pNode = pNode.next;
+        }
+        return null;   //退到了根节点仍没找到，则返回null
+    }
+    /*
+    面试题 9
+    stack2不为空，stack2的栈顶元素就是最先进入队列的元素
+    stack2为空时，把stack1的元素逐个弹出压入stack2
+     */
     Stack<Integer> stack1 = new Stack<Integer>();
     Stack<Integer> stack2 = new Stack<Integer>();
 
@@ -181,18 +276,21 @@ public class Main {
 
         }
     }
+    /*
+    面试题 10
+     */
     public int Fibonacci(int n) {//斐波那契数列
         int result [] =new int []{0,1};
         if(n < 2){
             return result[n];
         }
-        int one = 0;
-        int two = 1;
+        int Nminusone = 0;
+        int Nminustwo = 1;
         int sum = 0;
         for(int i = 2;i<=n;i++){
-            sum = one + two;
-            two = one;
-            one = sum;
+            sum = Nminusone + Nminustwo;
+            Nminustwo = Nminusone;//n-2
+            Nminusone = sum;//n-1
         }
         return sum;
     }
@@ -206,11 +304,18 @@ public class Main {
         if (target <= 0) return 0;
         return (int) Math.pow(2, target - 1);
     }
+
+    /*
+    面试题 11
+    3 4 5 1 2 是1 2 3 4 5 的一个旋转数组
+    二分查找，如果mid大约left说明前半部分还是大的那个递增区间，最小元素就要去后半部分找
+    特殊情况1 0 1 1 1 和 1 1 1 0 1 都可以是 0 1 1 1 1 的旋转，当三数都一样的话 则顺序查找
+     */
     public int minNumberInRotateArray(int [] array) {//旋转数组中的最小数字
         if(array.length == 0) return 0;
         int left = 0;
         int right = array.length-1;
-        int mid =left;
+        int mid = left;
         while(array[left] >= array[right]){
             if(right - left ==1){
                 mid = right;
@@ -236,19 +341,149 @@ public class Main {
         }
         return res;
     }
+    /*
+    面试题12
+    路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向左，向右，向上，向下移动一个格子。如果一条路径经过了矩阵中的某一个格子，则之后不能再次进入这个格子。
+    例如 a b c e  这样的3 X 4 矩阵中包含一条字符串"bcced"的路径，但是矩阵中不包含"abcb"路径，因为字符串的第一个字符b占据了矩阵中的第一行第二个格子之后，路径不能再次进入该格子。
+         s f c s
+         a d e e
+     注意matrix是一维数组
+     */
+    public boolean hasPath(char[] matrix, int rows, int cols, char[] str)
+    {
+        if(matrix.length==0||rows<1||cols<1||str.length==0){
+            return false;
+        }
+
+        boolean [] isVisited = new boolean[matrix.length];
+
+        int path =0;
+        for(int i = 0;i<rows;i++){
+            for(int j =0;j<cols;j++){
+                if(hasPathCore(matrix,rows,cols,i,j,str,path,isVisited)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    private boolean hasPathCore(char[] matrix, int rows, int cols, int i, int j, char[] str, int path,
+                                boolean[] isVisited) {
+        // TODO Auto-generated method stub
+        int index = i*cols+j;
+        if(i<0||j<0||i>=rows||j>=cols||matrix[index]!=str[path]||isVisited[index]){
+            return false;
+        }
+        if(path == str.length-1) return true;
+        isVisited[index] = true;
+        if(hasPathCore(matrix, rows, cols, i+1, j, str, path+1, isVisited)||hasPathCore(matrix, rows, cols, i-1, j, str, path+1, isVisited)||
+                hasPathCore(matrix, rows, cols, i, j+1, str, path+1, isVisited)||hasPathCore(matrix, rows, cols, i, j-1, str, path+1, isVisited)){
+            return true;
+        }
+        isVisited[index] = false;
+        return false;
+    }
+
+    /*
+    面试题13 机器人的运动范围
+    地上有一个m行和n列的方格。一个机器人从坐标0,0的格子开始移动，每一次只能向左，右，上，下四个方向移动一格，但是不能进入行坐标和列坐标的数位之和大于k的格子。
+    例如，当k为18时，机器人能够进入方格（35,37），因为3+5+3+7 = 18。
+    但是，它不能进入方格（35,38），因为3+5+3+8 = 19。请问该机器人能够达到多少个格子？
+     */
+    public static int movingCount(int threshold, int rows, int cols)//机器人的运动范围
+    {
+        boolean [] flag = new boolean[rows*cols];
+        for(int i=0;i<rows*cols;i++)
+            flag[i]=false;
+        int count = movingCountCore(threshold,0,0,rows,cols,flag);
+
+        return count;
+    }
+    private static int movingCountCore(int threshold, int i, int j, int rows, int cols, boolean[] flag) {
+        // TODO Auto-generated method stub
+        int count = 0;
+        if(movingCountValid(threshold,i,j,rows,cols,flag)){
+            int index = i*cols+j;
+            flag[index] = true;
+            count = 1+movingCountCore(threshold,i+1,j,rows,cols,flag)+movingCountCore(threshold,i-1,j,rows,cols,flag)
+                    +movingCountCore(threshold,i,j+1,rows,cols,flag)+movingCountCore(threshold,i,j-1,rows,cols,flag);
+        }
+        return count;
+    }
+    private static boolean movingCountValid(int threshold, int i, int j, int rows, int cols, boolean[] flag) {
+        // TODO Auto-generated method stub
+        if(i>=0&&j>=0&&i<rows&&j<cols&&flag[i*cols+j]==false&&getDigitSum(i)+getDigitSum(j)<=threshold){
+            return true;
+        }
+        return false;
+    }
+    private static int getDigitSum(int num) {
+        // TODO Auto-generated method stub
+        int sum = 0;
+        while(num>0){
+            sum +=num%10;
+            num=num/10;
+        }
+        return sum;
+    }
+    /*
+    面试题14 剪绳子
+    一根长度为n的绳子，剪成m段 求每段最大乘积
+    n=2 1*1 n=3 1*2 dp[3]=3 是 后面需要，绳子长度为3
+     */
+    public static int integerBreak(int n) {
+        if(n < 2)
+            return 0;
+        if(n == 2)
+            return 1;
+        if(n == 3)
+            return 2;
+        int dp[] = new int[n+1];
+        dp[0] = 0;
+        dp[1] = 1;dp[2] = 2;dp[3] = 3;
+        int max = 0;
+        for(int i = 4;i <= n;i++){
+            for(int j = 1;j <= i/2;j++){
+                int temp = dp[j] * dp[i-j];
+                if(max < temp)
+                    max = temp;
+                dp[i] = max;
+            }
+            max = dp[n];
+        }
+        for(int i =0;i<=n;i++)
+            System.out.print(dp[i]+" ");
+        return max;
+    }
+    /*
+    面试题15 二进制中1的个数
+    把一个数减去1时，如果该整数的二进制最右边一位是1，则最后一位变为0，其余位不变；如果最右边一位不是1则必定为0，一个整数只要不是0，则至少有一位为1，减去1后
+    最靠右边的1变为0，再靠右边的0全变为1。
+    假设n=1100（2）时，减去1的结果为1011，再和1100做位与运算，得到1000，把最右边的1变为了0，如此反复的做下去，即可统计出1的个数。
+
+     */
+    public int NumberOf1(int n) {
+        int count = 0;
+        while(n!=0){
+            ++count;
+            n = (n-1)&n;
+        }
+        return count;
+    }
+    /*
+    面试题17 打印从1到最大的n位数
+    0~9全排列
+    然后去除最前面的那个0
+     */
     public static void printOneToN(int n){
         if(n<=0){
             return;
         }
         char number [] = new char[n];
-        for(int i = 0;i<n;i++){
-            number[i] = '0';
-        }
         for(int i = 0;i<10;i++){
             number[0] = (char) (i + '0');
             printToMaxOfNDigitsRecursively(number, n, 0);
         }
-
     }
 
     private static void printToMaxOfNDigitsRecursively(char[] number, int len, int index) {
@@ -275,24 +510,137 @@ public class Main {
         }
         System.out.println();
     }
-    public ListNode FindKthToTail(ListNode head,int k) {//链表中倒数第k个结点
-        if(head == null||k<=0)return null;
-        ListNode pre = head;
-        ListNode last = head;
-        for(int i = 0;i < k - 1;i++){
-            if(pre.next!=null){
-                pre = pre.next;
-            }
-            else{
-                return null;
-            }
-        }
-        while(pre.next!=null){
-            pre = pre.next;
-            last = last.next;
-        }
-        return last;
+
+    /*
+    面试题18 删除链表的中的节点,看注释
+     */
+    public void deleteNodeEasy(ListNode node) {//leetcode上的链表删除，不是头节 不是尾节点 节点数>2
+        node.val = node.next.val;
+        node.next = node.next.next;
     }
+    public void deleteNode(ListNode head, ListNode toBeDeleted){
+        //参数校验
+        if(head == null || toBeDeleted == null){
+            return ;
+        }
+        //链表中只有一个节点，那么待删除的节点既是头结点，又是尾结点
+        if(head == toBeDeleted && head.next == null){
+            head = null;
+        }else{
+            //待删除的节点是尾节点
+            if(toBeDeleted.next == null){
+                ListNode temp = head;
+                while(temp.next != toBeDeleted){
+                    temp = temp.next;
+                }
+                temp.next = null;
+            }else{          //待删除的节点不是尾节点
+                toBeDeleted.val = toBeDeleted.next.val;
+                toBeDeleted.next = toBeDeleted.next.next;
+            }
+        }
+    }
+    /*
+    面试题18 删除链表的中的重复节点
+    pre前置指针 和一个当前指针 移动
+     */
+    public ListNode deleteDuplication(ListNode pHead)//删除链表中重复的节点
+    {
+        if(pHead==null||pHead.next==null)
+            return pHead;
+        ListNode dummyHead = new ListNode(0);
+        dummyHead.next = pHead;
+        ListNode pre = dummyHead;
+        ListNode cur = pHead;
+        while(cur!=null&&cur.next!=null){
+            if(cur.val == cur.next.val){
+                cur = cur.next;
+                while(cur.next!=null&&cur.val == cur.next.val){
+                    cur = cur.next;
+                }
+                pre.next = cur.next;
+                cur = pre.next;
+            }else{
+                pre = pre.next;
+                cur = cur.next;
+            }
+        }
+        return dummyHead.next;
+    }
+    /*
+    面试题19 正则表达式匹配
+
+     */
+    public static boolean match(char[] str, char[] pattern)//正则表达式
+    {
+        if(str == null||pattern == null){
+            return false;
+        }
+        return matchCore(str,0,str.length,0,pattern.length,pattern);
+    }
+
+    private static boolean matchCore(char[] str,int strIndex,int strLen,int patternIndex,int patternLen, char[] pattern) {
+        if(strIndex == strLen && patternIndex == patternLen)
+            return true;
+        if(strIndex!=strLen && patternIndex ==patternLen)
+            return false;
+        if(patternIndex + 1 < patternLen && pattern[patternIndex+1] =='*'){
+            if((pattern[patternIndex]=='.' && strIndex!=strLen)||(strIndex!=strLen && pattern[patternIndex] ==str[strIndex])){
+                return matchCore(str,strIndex+1,strLen,patternIndex+2,patternLen,pattern)||//  判定完毕，继续pattern
+                        matchCore(str,strIndex+1,strLen,patternIndex,patternLen,pattern)||//继续判定
+                        matchCore(str,strIndex,strLen,patternIndex+2,patternLen,pattern);//判定完毕 *认定为判了个空
+            }
+            else {
+                return matchCore(str, strIndex, strLen, patternIndex + 2, patternLen, pattern);//直接跳过*的判定
+            }
+        }
+        if((pattern[patternIndex]=='.' && strIndex!=strLen)||(strIndex!=strLen && pattern[patternIndex] ==str[strIndex]))
+            return matchCore(str,strIndex+1,strLen,patternIndex+1,patternLen,pattern);
+        return false;
+    }
+    /*
+    面试题20 表示数值的字符串
+    如果出现 . 就去判定小数
+     */
+    private int indexIsNumeric = 0;
+    public boolean isNumeric(char[] str) {
+        if (str.length < 1)
+            return false;
+
+        boolean flag = scanInteger(str);
+
+        if (indexIsNumeric < str.length && str[indexIsNumeric] == '.') {
+            indexIsNumeric++;
+            flag = scanUnsignedInteger(str) || flag;
+        }
+
+        if (indexIsNumeric < str.length && (str[indexIsNumeric] == 'E' || str[indexIsNumeric] == 'e')) {
+            indexIsNumeric++;
+            flag = flag && scanInteger(str);
+        }
+
+        return flag && indexIsNumeric == str.length;
+
+    }
+    //扫描可以是正负开头的0~9的数位
+    private boolean scanInteger(char[] str) {
+        if (indexIsNumeric < str.length && (str[indexIsNumeric] == '+' || str[indexIsNumeric] == '-') )
+            indexIsNumeric++;
+        return scanUnsignedInteger(str);
+
+    }
+    //扫描0~9的数位
+    private boolean scanUnsignedInteger(char[] str) {
+        int start = indexIsNumeric;
+        while (indexIsNumeric < str.length && str[indexIsNumeric] >= '0' && str[indexIsNumeric] <= '9')
+            indexIsNumeric++;
+        return start < indexIsNumeric; //是否存在整数
+    }
+    /*
+    面试题21 调整数组顺序使奇数位与偶数前面
+    第一种方法类似于快排，双指针不停互换
+    第二种直接就开辅助数组
+     */
     public void reOrderArray(int [] array) {//调整数组顺序使奇数位于偶数前面
 //        if(array.length == 0)return;
 //        int begin = 0;
@@ -322,6 +670,35 @@ public class Main {
         }
     }
 
+    /*
+    面试题22 链表中倒数第k个结点
+    快慢指针 快指针先走 k-1 步
+    然后快慢指针一起走 走到头 慢指针所指就是 倒数第k个结点
+     */
+    public ListNode FindKthToTail(ListNode head,int k) {//链表中倒数第k个结点
+        if(head == null||k<=0)return null;//注意让程序崩溃的地方
+        ListNode pre = head;
+        ListNode last = head;
+        for(int i = 0;i < k - 1;i++){
+            if(pre.next!=null){
+                pre = pre.next;
+            }
+            else{
+                return null;//注意让程序崩溃的地方
+            }
+        }
+        while(pre.next!=null){
+            pre = pre.next;
+            last = last.next;
+        }
+        return last;
+    }
+
+    /*
+    面试题23 链表中环的入口结点
+    快慢指针，如果相遇证明有环
+    此时慢指针和一个新指针（从头开始）再同时走，再相遇的位置为环的人口，可以画图来看 l = n l是头到入口，n是快慢指针相遇位置绕圈到入口
+     */
     public ListNode EntryNodeOfLoop(ListNode pHead)//链表中环的入口节点
     {
         if(pHead==null)return null;
@@ -348,6 +725,28 @@ public class Main {
             return null;
         }
     }
+
+    /*
+    面试题24 反转链表
+    为了避免断链，需要先把即将改变指向的那个结点保存一下，知道它所指向的那个结点
+     */
+    public ListNode ReverseList(ListNode head) {
+        if (null == head || null == head.next) {
+            return head;
+        }
+        ListNode pre = null;
+        while (null != head) {
+            ListNode pNext = head;
+            head = head.next;
+            pNext.next = pre;
+            pre = pNext;
+        }
+        return pre;
+    }
+    /*
+    面试题24 合并两个有序链表
+    有一个没了就直接续上，递归调用
+    */
     public ListNode Merge(ListNode list1,ListNode list2) {//合并两个有序链表
         if(list1 ==null)
             return list2;
@@ -654,29 +1053,7 @@ public class Main {
         ch[j] = chTemp;
     }
 
-    public ListNode deleteDuplication(ListNode pHead)//删除链表中重复的节点
-    {
-        if(pHead==null||pHead.next==null)
-            return pHead;
-        ListNode dummyHead = new ListNode(0);
-        dummyHead.next = pHead;
-        ListNode pre = dummyHead;
-        ListNode cur = pHead;
-        while(cur!=null&&cur.next!=null){
-            if(cur.val == cur.next.val){
-                cur = cur.next;
-                while(cur.next!=null&&cur.val == cur.next.val){
-                    cur = cur.next;
-                }
-                pre.next = cur.next;
-                cur = pre.next;
-            }else{
-                pre = pre.next;
-                cur = cur.next;
-            }
-        }
-        return dummyHead.next;
-    }
+
     public RandomListNode Clone(RandomListNode pHead)//复杂链表的复制
     {
         CloneNodes(pHead);
@@ -1405,68 +1782,9 @@ public class Main {
         }
         return B;
     }
-    public static boolean match(char[] str, char[] pattern)//正则表达式
-    {
-        if(str == null||pattern == null){
-            return false;
-        }
-        return matchCore(str,0,str.length,0,pattern.length,pattern);
-    }
 
-    private static boolean matchCore(char[] str,int strIndex,int strLen,int patternIndex,int patternLen, char[] pattern) {
-        if(strIndex == strLen && patternIndex == patternLen)
-            return true;
-        if(strIndex!=strLen && patternIndex ==patternLen)
-            return false;
-        if(patternIndex + 1 < patternLen && pattern[patternIndex+1] =='*'){
-            if((pattern[patternIndex]=='.' && strIndex!=strLen)||(strIndex!=strLen && pattern[patternIndex] ==str[strIndex])){
-                return matchCore(str,strIndex+1,strLen,patternIndex+2,patternLen,pattern)||//  判定完毕，继续pattern
-                        matchCore(str,strIndex+1,strLen,patternIndex,patternLen,pattern)||//继续判定
-                        matchCore(str,strIndex,strLen,patternIndex+2,patternLen,pattern);//判定完毕 *认定为判了个空
-            }
-            else {
-                return matchCore(str, strIndex, strLen, patternIndex + 2, patternLen, pattern);//直接跳过*的判定
-            }
-        }
-        if((pattern[patternIndex]=='.' && strIndex!=strLen)||(strIndex!=strLen && pattern[patternIndex] ==str[strIndex]))
-            return matchCore(str,strIndex+1,strLen,patternIndex+1,patternLen,pattern);
-        return false;
-    }
 
-    private int indexIsNumeric = 0;
-    public boolean isNumeric(char[] str) {
-        if (str.length < 1)
-            return false;
 
-        boolean flag = scanInteger(str);
-
-        if (indexIsNumeric < str.length && str[indexIsNumeric] == '.') {
-            indexIsNumeric++;
-            flag = scanUnsignedInteger(str) || flag;
-        }
-
-        if (indexIsNumeric < str.length && (str[indexIsNumeric] == 'E' || str[indexIsNumeric] == 'e')) {
-            indexIsNumeric++;
-            flag = flag && scanInteger(str);
-        }
-
-        return flag && indexIsNumeric == str.length;
-
-    }
-
-    private boolean scanInteger(char[] str) {
-        if (indexIsNumeric < str.length && (str[indexIsNumeric] == '+' || str[indexIsNumeric] == '-') )
-            indexIsNumeric++;
-        return scanUnsignedInteger(str);
-
-    }
-
-    private boolean scanUnsignedInteger(char[] str) {
-        int start = indexIsNumeric;
-        while (indexIsNumeric < str.length && str[indexIsNumeric] >= '0' && str[indexIsNumeric] <= '9')
-            indexIsNumeric++;
-        return start < indexIsNumeric; //是否存在整数
-    }
     static LinkedHashMap<Character,Integer> listStr = new LinkedHashMap();
     public static void Insert(char ch)
     {
@@ -1506,5 +1824,45 @@ public class Main {
                 result.add(num[list.peekFirst()]);
         }
         return result;
+    }
+
+    public static class TreeLinkNode {
+        int val;
+        TreeLinkNode left = null;
+        TreeLinkNode right = null;
+        TreeLinkNode next = null;
+
+        TreeLinkNode(int val) {
+            this.val = val;
+        }
+    }
+    public static class RandomListNode {
+        public int val;
+        public RandomListNode next;
+        public RandomListNode random;
+
+        public RandomListNode() {}
+        RandomListNode(int label) {//牛客网的构造函数
+            this.val = label;
+        }
+
+        public RandomListNode(int _val,RandomListNode _next,RandomListNode _random) {
+            val = _val;
+            next = _next;
+            random = _random;
+        }
+    }
+    public static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode(int x) { val = x; }
+    }
+    public static class ListNode {
+        int val;
+        ListNode next=null;
+        ListNode(int val) {
+            this.val=val;
+        }
     }
 }
