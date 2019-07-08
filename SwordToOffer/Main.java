@@ -744,7 +744,7 @@ public class Main {
         return pre;
     }
     /*
-    面试题24 合并两个有序链表
+    面试题25 合并两个有序链表
     有一个没了就直接续上，递归调用
     */
     public ListNode Merge(ListNode list1,ListNode list2) {//合并两个有序链表
@@ -764,6 +764,11 @@ public class Main {
         return dummyHead;
 
     }
+    /*
+         面试题26 树的子结构
+         第一步先判断两树根节点是否相等，相等则进行第二步判定，不相等 或者 相等但并非子树 都继续比较tree1的左右节点
+         第二步 一直递归调用查看是否节点值都相等，知道子树结束（到叶子节点） 则成功
+     */
     public boolean HasSubTree(TreeNode root1, TreeNode root2){//判断一个二叉树是否为另一个二叉树的子树
         boolean result = false;
         if(root1 != null && root2 !=null){
@@ -788,6 +793,11 @@ public class Main {
         return doesTree1HasTree2(root1.left, root2.left) && doesTree1HasTree2(root1.right, root2.right);
     }
 
+    /*
+     * 面试题27：二叉树的镜像
+     * 输入一个二叉树，该函数输出它的镜像
+     * 先先序遍历这颗树，如果遍历到的节点都有子节点 就交换他的两个子节点
+     */
     public void Mirror(TreeNode root) {//二叉树的镜像
         if(root == null){
             return;
@@ -803,8 +813,11 @@ public class Main {
         if(root.right!=null){
             Mirror(root.right);
         }
-
     }
+    /*
+     * 面试题28 对称的二叉树
+     * 判断一颗二叉树是不是和它的镜像一样
+     */
     boolean isSymmetrical(TreeNode pRoot)//对称二叉树
     {
         return isMirror(pRoot,pRoot);
@@ -819,6 +832,10 @@ public class Main {
             return false;
         return isMirror(pRoot1.left,pRoot2.right)&&isMirror(pRoot1.right,pRoot2.left);
     }
+    
+    /*
+     * 面试题29 顺时针打印矩阵
+     */
     public ArrayList<Integer> printMatrix(int [][] matrix) {
         ArrayList<Integer> results = new ArrayList<Integer>() ;
         if(matrix.length==0) {
