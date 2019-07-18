@@ -20,12 +20,9 @@ public class Main {
 //        root2.left = root;
 //        root5.right = root6;
 //        System.out.println(KthNode(root5,3));
-        int nums [] = new int[]{2,3,4,2,6,2,5,1};
-        //System.out.println(FindNumsAppearOnce(nums,nums,nums));
-        String s = "a";
-        String s1=".";
-        //System.out.println(integerBreak(6));
-        printOneToN(2);
+        int nums [] = new int[]{1,2,4,7,11,15};
+       
+
     }
 
     /*
@@ -219,7 +216,7 @@ public class Main {
         return buildTree(pre,in,0,pre.length-1,0,in.length-1);
 
     }
-    
+
     private TreeNode buildTree(int[] preOrder, int[] inOrder, int startPreOrder, int endPreOrder, int startInOrder, int endInOrder) {
         if(startPreOrder>endPreOrder||startInOrder>endInOrder)
             return null;
@@ -832,9 +829,11 @@ public class Main {
             return false;
         return isMirror(pRoot1.left,pRoot2.right)&&isMirror(pRoot1.right,pRoot2.left);
     }
-    
+
     /*
      * 面试题29 顺时针打印矩阵
+     * 解法与书上略有不同
+     * 模拟顺时针打印，就是边界值一定要注意
      */
     public ArrayList<Integer> printMatrix(int [][] matrix) {
         ArrayList<Integer> results = new ArrayList<Integer>() ;
@@ -850,11 +849,12 @@ public class Main {
             rows--;
             cols--;
         }
+        //行数为奇数，还剩一行最后
         if (start == rows) {
             for (int k = start; k<= cols; k++){
                 results.add(matrix[start][k]);
             }
-        } else if (start == cols) {
+        } else if (start == cols) {//列数为奇数，还剩一行最后
             for (int n = start; n<= rows; n++)
                 results.add(matrix[n][start]);
         }
@@ -862,35 +862,49 @@ public class Main {
     }
 
     private void printMatrixClockWisely(int[][] matrix, int start, int rows, int cols, ArrayList<Integer> result) {
-            for(int i=start;i<=cols;i++){
-                result.add(matrix[start][i]);
-            }
-            for(int j=start+1;j<=rows;j++){
-                result.add(matrix[j][cols]);
-            }
-            for(int i=cols-1;i>=start;i--){
-                result.add(matrix[rows][i]);
-            }
-            for(int j=rows-1;j>start;j--){
-                result.add(matrix[j][start]);
-            }
-
-    }
-    public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {//从上到小打印二叉树
-        ArrayList<Integer> results = new ArrayList<Integer>() ;
-        if(root == null)
-            return results;
-        Queue<TreeNode> queue = new LinkedList<>();
-        queue.add(root);
-        while(!queue.isEmpty()){
-            TreeNode node = queue.poll();
-            results.add(node.val);
-            if (node.left!=null)queue.add(node.left);
-            if(node.right!=null)queue.add(node.right);
+        for(int i=start;i<=cols;i++){
+            result.add(matrix[start][i]);
         }
-        return results;
+        for(int j=start+1;j<=rows;j++){
+            result.add(matrix[j][cols]);
+        }
+        for(int i=cols-1;i>=start;i--){
+            result.add(matrix[rows][i]);
+        }
+        for(int j=rows-1;j>start;j--){
+            result.add(matrix[j][start]);
+        }
     }
 
+    /* 面试题30 包含min函数的栈 最小栈
+     * 实现 min push pop函数
+     * 每次把最小的数push到辅助栈中-》s2， push操作 s1正常入栈，s2为空或者s2栈顶元素大于要插入的值则s2入栈，pop操作s1正常操作，如果出栈的是最小，s2也出
+     */
+    private Stack<Integer> s1 = new Stack<>();
+    private Stack<Integer> s2 = new Stack<>();
+
+    public void pushMinStack(int x) {
+        s1.push(x);
+        if(s2.isEmpty()||s2.peek()>=x) s2.push(x);
+    }
+
+    public void popMinStack() {
+        int x=s1.pop();
+        if(s2.peek()==x)s2.pop();
+    }
+
+    public int top() {
+        return s1.peek();
+    }
+
+    public int min() {
+        return s2.peek();
+    }
+
+    /* 面试题31 栈的压入、弹出序列
+     * 输入两个序列 一个是栈的压入顺序 一个是弹出序列，判断 这个弹出序列是否能由压入顺序得到
+     * 使用一个辅助栈， 如果下一个弹出的数字刚好是栈顶数字，则直接弹出，如果弹出数字不在栈顶，说明还没压入辅助栈，则压入，如果所有数字都押入了还没找到下一个弹出数字，false
+     */
     public boolean IsPopOrder(int [] pushA,int [] popA) {//栈的压入，弹出序列
         Stack<Integer> stack = new Stack<>();
         boolean flag = false;
@@ -907,12 +921,91 @@ public class Main {
         return flag;
     }
 
+    /*
+     * 面试题32 从上打印二叉树（层序遍历）
+     */
+    public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {//从上到小打印二叉树
+        ArrayList<Integer> results = new ArrayList<Integer>() ;
+        if(root == null)
+            return results;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while(!queue.isEmpty()){
+            TreeNode node = queue.poll();
+            results.add(node.val);
+            if (node.left!=null)queue.add(node.left);
+            if(node.right!=null)queue.add(node.right);
+        }
+        return results;
+    }
+    /* 面试题 32 变型2
+     * 上述的变型
+     */
+    ArrayList<ArrayList<Integer> > Print1(TreeNode pRoot) {//二叉树打印多行
+        ArrayList<ArrayList<Integer>> results = new ArrayList<>();
+        if(pRoot == null) return results;
+        int count = 0;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(pRoot);
+        while (!queue.isEmpty()){
+            count = queue.size();
+            ArrayList<Integer> list = new ArrayList<>();
+            while (count > 0){
+                TreeNode node = queue.poll();
+                list.add(node.val);
+                if(node.left !=null)
+                    queue.add(node.left);
+                if(node.right!=null)
+                    queue.add(node.right);
+                count--;
+            }
+            results.add(list);
+        }
+        return results;
+    }
+
+    /* 面试题 32 变型2
+     * 上述的变型
+     */
+    public ArrayList<ArrayList<Integer> > Print(TreeNode pRoot) {//按之字形顺序打印二叉树
+        int level = 0;
+        ArrayList<ArrayList<Integer>> results = new ArrayList<>();
+        if(pRoot == null)
+            return results;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(pRoot);
+        while(!queue.isEmpty()){
+            int count = queue.size();
+            ArrayList<Integer> list = new ArrayList<>();
+            while (count > 0){
+                TreeNode node = queue.poll();
+                if(level % 2 ==0){
+                    list.add(node.val);
+                }
+                else {
+                    list.add(0,node.val);//从头部插
+                }
+                if(node.left !=null)
+                    queue.add(node.left);
+                if(node.right!=null)
+                    queue.add(node.right);
+                count--;
+            }
+            results.add(list);
+            level++;
+        }
+        return results;
+    }
+
+    /* 面试题33 二叉搜索树的后续遍历序列
+     * 输入一个数组 判断是不是某二叉搜索树的后续遍历结果 5 7 6 9 11 10 8
+     * 首先最后一个数肯定是根节点， 小于根节点的都是左树 大于是右，再递归调用
+     */
     public static boolean VerifySquenceOfBST(int [] sequence) {//二叉搜索树的后序遍历序列
         if(sequence.length == 0)return false;
         int root = sequence[sequence.length-1];
         int index = 0;
         for(;index<sequence.length-1;index++){
-            index = index;
             if(sequence[index] > root){
                 break;
             }
@@ -933,37 +1026,14 @@ public class Main {
             int rightArr [] = Arrays.copyOfRange(sequence,index,sequence.length-1);
             right = VerifySquenceOfBST(rightArr);
         }
-        return left&&right;
+        return left && right;
     }
-    public ArrayList<ArrayList<Integer> > Print(TreeNode pRoot) {//按之字形顺序打印二叉树
-        int level = 0;
-        ArrayList<ArrayList<Integer>> results = new ArrayList<>();
-        if(pRoot == null)
-            return results;
-        Queue<TreeNode> queue = new LinkedList<>();
-        queue.add(pRoot);
-        while(!queue.isEmpty()){
-            int count = queue.size();
-            ArrayList<Integer> list = new ArrayList<>();
-            while (count > 0){
-                TreeNode node = queue.poll();
-                if(level % 2 ==0){
-                    list.add(node.val);
-                }
-                else {
-                    list.add(0,node.val);
-                }
-                if(node.left !=null)
-                    queue.add(node.left);
-                if(node.right!=null)
-                    queue.add(node.right);
-                count--;
-            }
-            results.add(list);
-            level++;
-        }
-        return results;
-    }
+
+    /*
+     * 面试题34 二叉树中 和为某一值的路径
+     * 输入一颗树和target 输出根节点到叶子节点所经过的结点之和为target
+     * 前序遍历某一节点 把该节点添加到路径上 并累加值，当路径累加值等于target且 该节点是叶子节点则找了，然后回溯 继续递归
+     */
     public ArrayList<ArrayList<Integer>> FindPath(TreeNode root,int target) {//二叉树中和为某一值的路径
         ArrayList<ArrayList<Integer>> results = new ArrayList<>();
         if(root ==null)return results;
@@ -993,6 +1063,61 @@ public class Main {
         }
     }
 
+    /*
+     * 面试题35 复杂链表的复制
+     * 一个链表除了有指向next的指针，还有random指针，不一定指向哪个节点，复制一条这种链表
+     * 困难在于，复制的时候，每次找random节点的指向都需要从头开始扫描
+     * 解决办法：先把每个节点都复制出来一份，A->B-> 改为A->A'->B->B'>C->C'
+     * 第二步 把A' B'这种的random指向对应节点，第三步拆分，奇偶就可以拆开
+     */
+    public RandomListNode Clone(RandomListNode pHead)//复杂链表的复制
+    {
+        CloneNodes(pHead);
+        ConnectSiblingNode(pHead);
+        return ReConnectNodes(pHead);
+    }
+    private void CloneNodes(RandomListNode pHead) {//第一步
+        RandomListNode cur = pHead;
+        while(cur!=null){
+            RandomListNode newCloneNode = new RandomListNode(cur.val);
+            newCloneNode.next = cur.next;
+            newCloneNode.random = null;
+            cur.next = newCloneNode;
+            cur = newCloneNode.next;
+        }
+    }
+    private void ConnectSiblingNode(RandomListNode pHead) {//第二步
+        RandomListNode cur = pHead;
+        while (cur != null){
+            RandomListNode pCloned = cur.next;
+            if(cur.random!=null){
+                pCloned.random = cur.random.next;//这样才能让所有Clone节点串一起
+            }
+            cur = pCloned.next;
+        }
+    }
+    private RandomListNode ReConnectNodes(RandomListNode pHead) {//第三步
+        RandomListNode pNode = pHead;
+        RandomListNode pCloneHead = null;
+        RandomListNode pCloneNode = null;
+        if(pNode != null){
+            pCloneHead = pCloneNode = pNode.next;
+            pNode.next = pCloneNode.next;
+            pNode = pNode.next;
+        }
+        while (pNode!=null){
+            pCloneNode.next = pNode.next;
+            pCloneNode = pCloneNode.next;
+            pNode.next = pCloneNode.next;
+            pNode = pNode.next;
+        }
+        return pCloneHead;
+    }
+
+    /* 面试题36 二叉搜索树与双向链表
+     * 输入一颗二叉搜索树，将该二叉搜索树转换成一个排序的双向链表，不准new 只能调整指向
+     * 由于要求链表是排好序的，直接中序遍历
+     */
     public TreeNode Convert(TreeNode pRootOfTree) {//二叉搜索树与双向链表
         List<TreeNode> list = new ArrayList<>();
         if(pRootOfTree == null) return null;
@@ -1006,12 +1131,10 @@ public class Main {
             for (int j = list.size()-1;j>0;j--){
                 list.get(j).left = list.get(j-1);
             }
-            //list.get(0).left = headNode;
         }
         return headNode;
 
     }
-
     private void InOrder(TreeNode pRootOfTree, List<TreeNode> list) {
         if (pRootOfTree!=null){
             InOrder(pRootOfTree.left,list);
@@ -1019,7 +1142,7 @@ public class Main {
             InOrder(pRootOfTree.right,list);
         }
     }
-//    别人的做法
+    //    别人的做法 总体思想在于中序的时候就把链表生成了，只不过用了两个头节点
 //    TreeNode head = null;
 //    TreeNode realHead = null;
 //    public TreeNode Convert(TreeNode pRootOfTree) {
@@ -1040,83 +1163,15 @@ public class Main {
 //        }
 //        ConvertSub(pRootOfTree.right);
 //    }
-      public static ArrayList<String> Permutation(String str) {//字符串的排列
-          int len = str.length();
-          ArrayList<String> res = new ArrayList<>();
-          char [] ch = str.toCharArray();
-          PermutationSub(ch,len,0,res);
-          HashSet h = new HashSet(res);
-          res.clear();
-          res.addAll(h);
-          Collections.sort(res);
-          return res;
-      }
 
-    private static void PermutationSub(char [] ch, int len, int start, ArrayList<String> res) {
-        if(start == len -1){
-            res.add(new String(ch));
-            return;
-        }
-        for(int i = start;i<len;i++){
-            swapStr(ch,start,i);
-            PermutationSub(ch,len,start+1, res);
-            swapStr(ch,start,i);
-        }
-    }
-
-    private static void swapStr(char [] ch, int i, int j) {
-        char chTemp = ch[i];
-        ch[i] = ch[j];
-        ch[j] = chTemp;
-    }
-
-
-    public RandomListNode Clone(RandomListNode pHead)//复杂链表的复制
-    {
-        CloneNodes(pHead);
-        ConnectSiblingNode(pHead);
-        return ReConnectNodes(pHead);
-    }
-
-    private RandomListNode ReConnectNodes(RandomListNode pHead) {
-        RandomListNode pNode = pHead;
-        RandomListNode pCloneHead = null;
-        RandomListNode pCloneNode = null;
-        if(pNode != null){
-            pCloneHead =pCloneNode = pNode.next;
-            pNode.next = pCloneNode.next;
-            pNode = pNode.next;
-        }
-        while (pNode!=null){
-            pCloneNode.next = pNode.next;
-            pCloneNode = pCloneNode.next;
-            pNode.next = pCloneNode.next;
-            pNode = pNode.next;
-        }
-        return pCloneHead;
-    }
-
-    private void ConnectSiblingNode(RandomListNode pHead) {
-        RandomListNode cur = pHead;
-        while (cur != null){
-            RandomListNode pCloned = cur.next;
-            if(cur.random!=null){
-                pCloned.random = cur.random.next;
-            }
-            cur = pCloned.next;
-        }
-    }
-
-    private void CloneNodes(RandomListNode pHead) {
-        RandomListNode cur = pHead;
-        while(cur!=null){
-            RandomListNode newCloneNode = new RandomListNode(cur.val);
-            newCloneNode.next = cur.next;
-            newCloneNode.random = null;
-            cur.next = newCloneNode;
-            cur = newCloneNode.next;
-        }
-    }
+    /*
+     * 面试题37 序列化二叉树
+     * 1 2 4 $ $ $ 3 5 $ $ 6 $ $
+     *               1
+     *             2   3
+     *            4   5 6
+     * 前序遍历形成序列化的字符串，反序列化 是#的就是null 否则按index去数组找到对应值
+     */
     public static String Serialize(TreeNode root) {
         StringBuilder sb = new StringBuilder();
         getSerializeString(root, sb);
@@ -1140,7 +1195,6 @@ public class Main {
         TreeNode node = DeserializeSub(s);
         return node;
     }
-
     private static TreeNode DeserializeSub(String[] s) {
         DeserializeIndex++;
         TreeNode node = null;
@@ -1152,52 +1206,40 @@ public class Main {
         return node;
     }
 
-    ArrayList<ArrayList<Integer> > Print1(TreeNode pRoot) {//二叉树打印多行
-        ArrayList<ArrayList<Integer>> results = new ArrayList<>();
-        if(pRoot == null) return results;
-        int count = 0;
-        Queue<TreeNode> queue = new LinkedList<>();
-        queue.add(pRoot);
-        while (!queue.isEmpty()){
-            count = queue.size();
-            ArrayList<Integer> list = new ArrayList<>();
-            while (count > 0){
-                TreeNode node = queue.poll();
-                list.add(node.val);
-                if(node.left !=null)
-                    queue.add(node.left);
-                if(node.right!=null)
-                    queue.add(node.right);
-                count--;
-            }
-            results.add(list);
-        }
-        return results;
+    /* 面试题38 字符串的排列
+     * 先求出能出现在第一个位置的所有字符，固定第一个位置，求后面所有字符的排列
+     */
+    public static ArrayList<String> Permutation(String str) {//字符串的排列
+        int len = str.length();
+        ArrayList<String> res = new ArrayList<>();
+        char [] ch = str.toCharArray();
+        PermutationSub(ch,len,0,res);
+        HashSet h = new HashSet(res); //去重
+        res.clear();
+        res.addAll(h);
+        Collections.sort(res);
+        return res;
     }
-
-    public static TreeNode KthNode(TreeNode pRoot, int k)//二叉搜索树的第K个结点
-    {
-        if(pRoot == null || k <= 0){
-            return null;
+    private static void PermutationSub(char [] ch, int len, int start, ArrayList<String> res) {
+        if(start == len -1){
+            res.add(new String(ch));
+            return;
         }
-        List<TreeNode> list = new ArrayList<>();
-        Stack<TreeNode> stack = new Stack<>();
-        while (pRoot !=null|| !stack.isEmpty()){
-            if(pRoot != null){
-                stack.push(pRoot);
-                pRoot = pRoot.left;
-            }
-            else{
-                pRoot = stack.pop();
-                list.add(pRoot);
-                pRoot = pRoot.right;
-            }
+        for(int i = start;i<len;i++){
+            swapStr(ch,start,i);
+            PermutationSub(ch,len,start+1, res);
+            swapStr(ch,start,i);//回溯
         }
-        if(k > list.size())
-            return null;
-        else
-            return list.get(k-1);
     }
+    private static void swapStr(char [] ch, int i, int j) {
+        char chTemp = ch[i];
+        ch[i] = ch[j];
+        ch[j] = chTemp;
+    }
+    /*
+     * 面试题39 数组中出现次数超过一半的数字
+     * 数组排序 超一半存在的话 必然是中位数，然后统计这个中位数的count
+     */
     public int MoreThanHalfNum_Solution(int [] array) {//数组中出现次数超过一半的数字
         if(array.length < 1) return 0;
         Arrays.sort(array);
@@ -1214,19 +1256,11 @@ public class Main {
             return 0;
         }
     }
-    private static int partition(int[] arr, int low, int high) {
-        int pivot = arr[low];               // 枢轴记录
-        while (low < high) {
-            while (low < high && arr[high] >= pivot) --high;
-            arr[low] = arr[high];           // 交换比枢轴小的记录到左端
-            while (low < high && arr[low] <= pivot) ++low;
-            arr[high] = arr[low];           // 交换比枢轴小的记录到右端
-        }
-        // 扫描完成，枢轴到位
-        arr[low] = pivot;
-        // 返回的是枢轴的位置
-        return low;
-    }
+
+    /* 面试题40 最小的K个数
+     * 快排思想 基于数组的第k个数字来调整，比k小去左边 比k大去右边，当 轴值正好落在k-1处 划分完毕
+     * 这题也可以用堆排序
+     */
     public static ArrayList<Integer> GetLeastNumbers_Solution(int [] input, int k) {//最小的K个数
         ArrayList<Integer> res = new ArrayList<Integer>();
 
@@ -1250,23 +1284,26 @@ public class Main {
         }
         return res;
     }
-    public static int FindGreatestSumOfSubArray(int[] array) {//连续子数组的最大和
-        if(array.length == 0) return 0;
-        int max = array[0];
-        int dp [] = new int[array.length];
-        dp[0] = array[0];
-        for(int i = 1; i < array.length;i++){
-            dp[i] = Math.max(dp[i-1] + array[i] ,array[i]);
+    private static int partition(int[] arr, int low, int high) {
+        int pivot = arr[low];               // 枢轴记录
+        while (low < high) {
+            while (low < high && arr[high] >= pivot) --high;
+            arr[low] = arr[high];           // 交换比枢轴小的记录到左端
+            while (low < high && arr[low] <= pivot) ++low;
+            arr[high] = arr[low];           // 交换比枢轴小的记录到右端
         }
-        for(int j = 0;j < dp.length;j++){
-            System.out.print(dp[j]+" ");
-            if(dp[j] > max){
-                max = dp[j];
-            }
-        }
-        return max;
+        // 扫描完成，枢轴到位
+        arr[low] = pivot;
+        // 返回的是枢轴的位置
+        return low;
     }
-    //数据流中的中位数
+    /* 面试题41 数据流中的中位数
+     * 数据的数目是不断变化的
+     * 保证数据容器左边数据都小于右边的数据， 最大堆实现左边数据容器，最小堆实现右边数据容器
+     * 为实现平均分配 偶数时插入最小堆 奇数最大堆
+     * 插入时 这个树小于最大堆的根节点，则入堆，去除最大堆最大放入最小堆
+     * 因为偶数插入最小堆，取值时候 size是奇数，中位数一定落在最小堆中，且是根节点
+     */
     private static PriorityQueue<Integer> minHeap = new PriorityQueue<>();
     private static PriorityQueue<Integer> maxHeap = new PriorityQueue<>(new Comparator<Integer>() {
         @Override
@@ -1293,11 +1330,10 @@ public class Main {
         }
 
     }
-
     public static Double GetMedian() {
         int size = minHeap.size() + maxHeap.size();
         double ans;
-        if((size & 1) == 1){
+        if((size & 1) == 1){//偶数
             ans = minHeap.peek();
         }
         else{
@@ -1306,6 +1342,33 @@ public class Main {
         return ans;
     }
 
+    /*
+     * 面试题42  连续子数组的最大和
+     * 一个数组有正 有负 1 -2 3 10 -4 7 2 -5  最大连续子数组 3 10 -4 7 2 -5  和为18
+     * 动态规划
+     */
+    public static int FindGreatestSumOfSubArray(int[] array) {//连续子数组的最大和
+        if(array.length == 0) return 0;
+        int max = array[0];
+        int dp [] = new int[array.length];
+        dp[0] = array[0];
+        for(int i = 1; i < array.length;i++){
+            dp[i] = Math.max(dp[i-1] + array[i] ,array[i]);
+        }
+        for(int j = 0;j < dp.length;j++){
+            System.out.print(dp[j]+" ");
+            if(dp[j] > max){
+                max = dp[j];
+            }
+        }
+        return max;
+    }
+
+    /*
+     * 面试题43 从1到n整数中1出现的次数
+     *  1~n 这n个整数的十进制表示中1出现的次数
+     *  以21345为例 10000 + 8000 + 821
+     */
     public static int NumberOf1Between1AndN_Solution(int n) {//整数中1出现的次数（从1到n整数中1出现的次数）
         if(n < 0){
             return 0;
@@ -1347,6 +1410,9 @@ public class Main {
         return result;
     }
 
+    /* 面试题44 数字序列中某一位的数字
+     * 数字以0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 。。。。。序列化到一个字符串中，求任意第n位对应的数字
+     */
     public static int digitAtIndex(int index){
         if(index < 0)
             return -1;
@@ -1381,6 +1447,10 @@ public class Main {
         return 9 * count;
     }
 
+    /* 面试题 45 把数组排成最小的数
+     * 输入一个正整数数组 打印出所有数字拼接一起最小的数 如[3.32.32] 321323
+     * 数组中的每个数排序 从小到大之后再拼接
+     */
     public String PrintMinNumber(int [] numbers) {//把数组排成最小的数
         if(numbers == null ||numbers.length == 0) return "";
         String [] str = new String[numbers.length];
@@ -1388,20 +1458,77 @@ public class Main {
         for(int i = 0;i<numbers.length;i++){
             str[i] = String.valueOf(numbers[i]);
         }
-        Arrays.sort(str, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                String s1 = o1 + o2;
-                String s2 = o2 + o1;
-                return s1.compareTo(s2);
-            }
-        });
+//        Arrays.sort(str, new Comparator<String>() {
+//            @Override
+//            public int compare(String o1, String o2) {
+//                String s1 = o1 + o2;
+//                String s2 = o2 + o1;
+//                return s1.compareTo(s2);
+//            }
+//        });
+        //Java 8 新特性 Lambda表达式 排序写法
+        Comparator<String> com = (String x, String y) -> (x + y).compareTo(y + x);
+        Arrays.sort(str,com);
         for(int i = 0;i<str.length;i++){
             sb.append(str[i]);
         }
         return sb.toString();
     }
 
+    /* 面试题47 礼物得最大价值
+     * 动态规划
+     */
+    public static int getMaxValue(int [][] numbers){
+        int rows = numbers.length;
+        int cols = numbers[0].length;
+        int dp[][] = new int[rows][cols];
+        for(int i = 0;i < rows;i++){
+            for(int j = 0;j < cols;j++){
+                int left = 0;
+                int up = 0;
+                if(i > 0){
+                    up = dp[i-1][j];
+                }
+                if(j > 0){
+                    left = dp[i][j-1];
+                }
+                dp[i][j] = Math.max(left,up) + numbers[i][j];
+            }
+        }
+        return dp[rows-1][cols-1];
+    }
+
+    /* 面试题48
+     * 最长不含重复字符得子串
+     * 输入: "abcabcbb" 输出: 3
+     * 解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+     */
+    public static int lengthOfLongestSubstring(String s) {
+        StringBuffer sb = new StringBuffer("");
+        int max=0;
+        for(int i = 0;i < s.length();i++){
+            String str = s.substring(i,i+1);
+            if(sb.indexOf(str) == -1){
+                sb.append(str);
+            }
+            else{
+                sb=new StringBuffer(sb.substring(sb.indexOf(str)+1));//如果重复了 就从这个重复得字符串开始截取 如 abc又遇到了a 就截取bc
+                System.out.println(sb.toString());
+                sb.append(str);
+                System.out.println(sb);
+            }
+            if(sb.length() > max){
+                max=sb.length();
+            }
+        }
+
+        return max;
+    }
+    /* 面试题49 丑数
+     * 输入 index 返回第index个丑数
+     * 只包含因子 2 3 5 得数 如：6 8 14就不是 包含了因子7
+     * 第二种思路 不在非丑数得整数上浪费时间 把每个丑数得基础上乘以2 或 3 或 5 排好序
+     */
     public static int GetUglyNumber_Solution(int index) {//丑数
         //时间效率太低
 //        if(index <= 0) return 0;
@@ -1440,9 +1567,13 @@ public class Main {
             num = num / 5;
         return (num == 1) ? true : false;
     }
+
+    /* 面试题50 第一个只出现一次的字符
+     * 不多说了 直接上HashMap
+     */
     public static int FirstNotRepeatingChar(String str) {//第一个只出现一次的字符
         Map<Character,Integer> map = new LinkedHashMap<>();
-        for(int i=0;i<str.length();i++){
+        for(int i = 0;i<str.length();i++){
             char c=str.charAt(i);
             if(map.containsKey(c)){
                 int count=map.get(c);
@@ -1463,6 +1594,38 @@ public class Main {
         }
         return str.indexOf(res);
     }
+
+    /* 面试题50变型 字符流中第一个只出现一次的字符
+     * 差不多
+     */
+    static Map<Character,Integer> charMap = new LinkedHashMap<>();
+    public static void insertChar(char c){
+        if(charMap.containsKey(c)){
+            int count = charMap.get(c);
+            count = count + 1;
+            charMap.put(c, count);
+        }
+        else{
+            charMap.put(c, 1);
+        }
+    }
+    public static char getFirstChar(){
+        char c = '\0';
+        for(Map.Entry<Character,Integer> entry: charMap.entrySet())
+        {
+            if(entry.getValue() == 1){
+                c = entry.getKey();
+                break;
+            }
+        }
+        return c;
+    }
+
+    /* 面试题51 数组中的逆序对
+     * 7 5 6 4  五个逆序对 76 75 74 64 54
+     * 把长度为4的数组分解成两个长度为2的子数组；把长度为2的数组分解成两个成都为1的子数组；把长度为1的子数组 合并、排序并统计逆序对 ；把长度为2的子数组合并、排序，并统计逆序对
+     * 每个子数组统计完，排好序再重放如数组中，之所以排序是因为这一部分已经统计完毕。
+     */
     public static int InversePairs(int [] array) {//数组中的逆序对
         if(array.length <= 0)
             return 0;
@@ -1495,7 +1658,6 @@ public class Main {
                 InversePairsCoreCount = (InversePairsCoreCount+mid-p1+1)%1000000007;
             }
         }
-
         while(p1<=mid)
             copy[k++]=array[p1++];
         while(p2<=end)
@@ -1533,6 +1695,9 @@ public class Main {
 //        }
 //    }
 
+    /* 面试题52 两个链表的第一个公共结点
+     * 暴力法 第二种办法：如果两个链表有公共节点 肯定是Y形 先获取每个链表得长度，得到长度差值，然后再一起遍历
+     */
     public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {//两个链表的第一个公共结点
         long len1 = findListLength(pHead1);
         long len2 = findListLength(pHead2);
@@ -1565,6 +1730,9 @@ public class Main {
         return len;
     }
 
+    /* 面试题53 在排序数组中查找数字
+     * 暴力遍历 方法二 二分查找第一个K得出现位置和最后一次得出现位置
+     */
     public int GetNumberOfK(int [] array , int k) {//数字在排序数组中出现的次数
         int count = 0;
         for(int i = 0;i<array.length;i++){
@@ -1573,11 +1741,99 @@ public class Main {
         }
         return count;
     }
-    public boolean IsBalanced_Solution(TreeNode root) {//平衡二叉树
-        if(root == null) return true;
-        return Math.abs(TreeDepth(root.right) - TreeDepth(root.left)) <= 1 && IsBalanced_Solution(root.left) && IsBalanced_Solution(root.right);
+    public static int GetNumberOfK1(int [] array , int k) {//数字在排序数组中出现的次数
+        int count = 0;
+        int first = getFirstK(array,k,0,array.length-1);
+        int last = getLastK(array,k,0,array.length-1);
+        if(first > -1 && last > -1){//find it ！
+            count = last - first + 1;
+        }
+        return count;
     }
 
+    private static int getFirstK(int[] array, int k, int start, int end) {
+        while (start <= end){
+            int mid = (start + end) / 2;
+            if(array[mid] < k){
+                start = mid + 1;
+            }
+            else if(array[mid] > k){
+                end = mid - 1;
+            }
+            else {
+                if((mid > 0 && array[mid - 1] !=k) || mid == 0){
+                    return mid;
+                }
+                else{
+                    end = end - 1;
+                }
+            }
+        }
+        return -1;
+    }
+    private static int getLastK(int[] array, int k, int start, int end) {
+        while (start <= end){
+            int mid = (start + end) / 2;
+            if(array[mid] < k){
+                start = mid + 1;
+            }
+            else if(array[mid] > k){
+                end = mid - 1;
+            }
+            else {
+                if((mid<array.length-1&&array[mid+1]!=k)||mid==array.length-1){
+                    return mid;
+                }
+                else{
+                    start = mid + 1;
+                }
+            }
+        }
+        return -1;
+    }
+    /* 面试题53 的变型
+     * 给定一个包含 0, 1, 2, ..., n 中 n 个数的序列，找出 0 .. n 中没有出现在序列中的那个数。
+     * 因为缺失了一个 所以 要多 异或一个 n 输入: [3,0,1] 输出: 2
+     */
+    public static int missingNumber(int[] nums) {
+        int ret = 0;
+        for(int i = 0; i <= nums.length; ++i) {
+            ret ^= i;
+        }
+        for (int j = 0; j < nums.length; ++j) {
+            ret ^= nums[j];
+        }
+        return ret;
+    }
+    /* 面试题54 二叉搜索树的第K大节点
+     * 直接中序遍历
+     */
+    public static TreeNode KthNode(TreeNode pRoot, int k)//二叉搜索树的第K个结点
+    {
+        if(pRoot == null || k <= 0){
+            return null;
+        }
+        List<TreeNode> list = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        while (pRoot !=null|| !stack.isEmpty()){
+            if(pRoot != null){
+                stack.push(pRoot);
+                pRoot = pRoot.left;
+            }
+            else{
+                pRoot = stack.pop();
+                list.add(pRoot);
+                pRoot = pRoot.right;
+            }
+        }
+        if(k > list.size())
+            return null;
+        else
+            return list.get(k-1);
+    }
+    /* 面试题 55 二叉树的深度
+     * 递归即可
+     */
     public int TreeDepth(TreeNode root) {//二叉树的深度
         if(root==null){
             return 0;
@@ -1586,7 +1842,21 @@ public class Main {
         int rightMax=TreeDepth(root.right);
         return 1+Math.max(leftMax,rightMax);
     }
+    /* 面试题 55 变型 平衡二叉树
+     * 递归即可 左右子树高度 + 左子树是否也是平衡 + 右子树是否也是平衡
+     */
+    public boolean IsBalanced_Solution(TreeNode root) {//平衡二叉树
+        if(root == null) return true;
+        return Math.abs(TreeDepth(root.right) - TreeDepth(root.left)) <= 1 && IsBalanced_Solution(root.left) && IsBalanced_Solution(root.right);
+    }
 
+    /* 面试题56 数组中数字出现的次数（只出现一次的数字 两次）
+     * 一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
+     * 因为是找出两个，找出一个很好找 直接异或运算 最后的值就是那个只出现一次的数字
+     * 可以先从头到尾异或，那么这个结果一定是那两个只出现一次数字的异或结果，那么找出第一个 为 1 的位置，已这个来划分数组，
+     * 这一位为0 一个子数组 为1 一个子数组。这样这两个数肯定分别在两个数组中了
+     * 例子 2 4 3 6 3 2 5 5  4 6 的异或 0010 按倒数第二位是不是1划分 2 3 6 3 2  和  4 5 5
+     */
     public static void FindNumsAppearOnce(int [] array,int num1[] , int num2[]) {//数组中只出现一次的数字
         if(array.length < 2) return;
         int res = 0;
@@ -1612,12 +1882,76 @@ public class Main {
 
     public static int findFirstBitIs(int num){//获取从低位开始的第一个1
         int indexBit = 0;
-        while(((num & 1)==0) && (indexBit)<8*4){
+        while(((num & 1)==0) && (indexBit)<8*4){//int的位长
             num = num >> 1;
             ++indexBit;
         }
         return indexBit;
     }
+    /* 面试题56 数组中数字出现的次数 变型 1个数字出现1次 其他的都出现3次
+     * 把数字中的每个数转为 二进制 所有数的每一位参与累加 如果能被3整除 说明这一位 那个只出现一次的数是0 反之是1
+     */
+    public static int singleNumber(int[] nums) {
+        int result = 0;
+        int bitSum [] = new int [32];
+        for(int i = 0;i < nums.length;i++){
+            int bitMask = 1;
+            for(int j = 31;j >= 0;--j){
+                int bit = nums[i] & bitMask;
+                if(bit != 0){
+                    bitSum[j] += 1;
+                }
+                bitMask = bitMask << 1;//依次判断个位 十位 百位。。。
+            }
+        }
+
+//        for(int i = 0;i < 32;i++){
+//            result = result << 1;
+//            System.out.println(result);
+//            result = result + (bitSum[i] % 3);
+//        }
+        for(int i = 0;i < 32;i++){
+            System.out.println(i+" "+bitSum[i]);
+            result = result << 1;
+            System.out.println("111    "+result);
+            result = result + (bitSum[i] % 3);
+            System.out.println("222    "+result);
+
+        }
+        return result;
+    }
+
+    /* 面试题 57 和为S的数字
+     * 递增排序数组 和 数字 S 查找两个数 和 为 S
+     * 举例 1 2 4 7 11 15 target 15  4+11 = 15
+     */
+    public ArrayList<Integer> FindNumbersWithSum(int [] array,int sum) {//和为S的两数字
+        ArrayList<Integer> res = new ArrayList<>();
+        if(array.length < 1)
+            return res;
+        int left = 0;
+        int right = array.length - 1;
+        while (left < right){
+            int tempSum = array[left] + array[right];
+            if(tempSum == sum){
+                res.add(array[left]);
+                res.add(array[right]);
+                break;
+            }
+            else if(tempSum > sum){
+                right--;
+            }
+            else{
+                left++;
+            }
+        }
+        return res;
+    }
+    /* 面试题 57 变型 和为S的连续正数序列
+     * 输入一个正数 s 打印所有和为s的连续正数序列
+     * 举例 target 15  1+2+3+4+5 = 4+5+6 = 7+8 三组
+     * 模拟过程 如果target为9 1 2 小了 big++ 1 2 3 继续big++ 1 2 3 4 大了 small++ 减去small 2 3 4 正好 big++ 2 3 4 5 然后 3 4 5 然后 4 5 停止
+     */
     public static ArrayList<ArrayList<Integer> > FindContinuousSequence(int sum) {//和为S的连续正数序列
         ArrayList<ArrayList<Integer>> res = new ArrayList<>();
         if(sum < 3)
@@ -1648,28 +1982,7 @@ public class Main {
         return res;
     }
 
-    public ArrayList<Integer> FindNumbersWithSum(int [] array,int sum) {//和为S的两数字
-        ArrayList<Integer> res = new ArrayList<>();
-        if(array.length < 1)
-            return res;
-        int left = 0;
-        int right = array.length - 1;
-        while (left < right){
-            int tempSum = array[left] + array[right];
-            if(tempSum == sum){
-                res.add(array[left]);
-                res.add(array[right]);
-                break;
-            }
-            else if(tempSum > sum){
-                right--;
-            }
-            else{
-                left++;
-            }
-        }
-        return res;
-    }
+
     public String LeftRotateString(String str,int n) {//左旋转字符串
         if(str.equals(""))return "";
         StringBuffer sb = new StringBuffer();
@@ -1800,26 +2113,6 @@ public class Main {
         return B;
     }
 
-
-
-    static LinkedHashMap<Character,Integer> listStr = new LinkedHashMap();
-    public static void Insert(char ch)
-    {
-        if(listStr.containsKey(ch)){
-            listStr.put(ch,listStr.get(ch)+1);
-        }
-        else
-            listStr.put(ch,1);
-    }
-    //return the first appearence once char in current stringstream
-    public static char FirstAppearingOnce()
-    {
-        for(Map.Entry<Character,Integer> entry: listStr.entrySet()){
-            if(entry.getValue() == 1)
-                return entry.getKey();
-        }
-        return '#';
-    }
     public static ArrayList<Integer> maxInWindows(int [] num, int size)//滑动窗口的最大值
     {
         ArrayList<Integer> result = new ArrayList<>();
