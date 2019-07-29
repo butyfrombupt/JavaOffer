@@ -3,9 +3,10 @@
  */
 public class Sort {
     public static void main(String args[]){
-        int [] Array = new int[] {5,2,8,1,4,9,7,6,3};
-        //quickSort(Array,0,Array.length-1);
-        heapSort(Array);
+        //int [] Array = new int[] {5,2,8,1,4,9,7,6,3};
+        int [] Array = new int[] {5,4,3,2,1,6};
+        quickSort(Array,0,Array.length-1);
+        //heapSort(Array);
         for(int i = 0;i < Array.length;i++){
             System.out.print(Array[i]+" ");
         }
@@ -20,7 +21,7 @@ public class Sort {
     平均时间为n2/4 ,时间为O(n2)
     是稳定的算法
      */
-    private static void InsertSort(int[] array) {
+    private static void InsertSort(int[] array) { //2 1
         // TODO Auto-generated method stub
         int i,j,temp;
         for(i = 1; i < array.length; i++) {
@@ -51,10 +52,10 @@ public class Sort {
                 temp = arr[i];
                 j = i - gap;
                 while(j >= 0 && temp < arr[j]){
-                    arr[j+gap] = arr[j];
+                    arr[j+gap] = arr[j];//记录后移，查找插入位置
                     j = j -gap;
                 }
-                arr[j+gap] = temp;
+                arr[j+gap] = temp;//不用后移找到位置
             }
             gap = gap / 2;
         }
@@ -72,17 +73,15 @@ public class Sort {
     private static void BubbleSort(int [] array){
         int n = array.length;
         for(int i = 0;i < n - 1;i++){
-            boolean flag = false;
-            for(int j = n - 1;j > i;j--){
-                if(array[j-1] > array[j]){
-                    swap(array,j-1,j);
+            boolean flag = false;//表示本趟冒泡是否发生交换的标志
+            for(int j = n - 1;j > i;j--){//一趟冒泡过程
+                if(array[j-1] > array[j]){//若为逆序
+                    swap(array,j-1,j);//交换
                     flag = true;
                 }
             }
-            out(array);
-            System.out.println();
             if(flag == false)
-                break;
+                return;//本趟遍历后没有发生交换，说明已经有序
         }
     }
 
@@ -161,17 +160,17 @@ public class Sort {
     private static void AdjustDown(int[] arr, int k, int len) {
         // TODO Auto-generated method stub
         int temp = arr[k];
-        for(int i = 2*k+1;i<len;i=i*2+1){
+        for(int i = 2*k+1;i<len;i=i*2+1){//沿值较大的子节点向下筛选
             if(i+1 < len && arr[i] < arr[i+1])
-                i++;
-            if(temp >= arr[i])
+                i++;//取值较大的子节点下标
+            if(temp >= arr[i])//筛选结束
                 break;
             else{
-                arr[k] = arr[i];
-                k = i;
+                arr[k] = arr[i];//把A[i] 调整到双亲节点上
+                k = i;//修改k的值继续向下筛选
             }
         }
-        arr[k] = temp;
+        arr[k] = temp;//被筛选节点的值放入最终位置
     }
 
     /*
