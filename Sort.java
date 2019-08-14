@@ -91,7 +91,8 @@ public class Sort {
     空间效率：平均O(log2n) 最坏O(n)
     时间效率：最坏O(n2) 平均O(nlog2n)
     不稳定的，若右端存在两个值一样的，都小于基准，一交换相对位置会变
-    快排优化：
+    快排优化：1.优化1、采用三数取中法原则枢纽。优化2、当待排序序列的长度分割到一定大小后，使用插入排序。
+             优化3、在一次分割结束后，可以把与Key相等的元素聚在一起，继续下次分割时，不用再对与key相等元素分割
      */
     private static void quickSort(int [] arr,int low,int high){
         if(low<high){
