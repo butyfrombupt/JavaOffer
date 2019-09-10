@@ -21,7 +21,8 @@ public class Main {
 //        root5.right = root6;
 //        System.out.println(KthNode(root5,3));
         int nums [] = new int[]{1,2,4,7,11,15};
-       
+        //sout 是快捷键
+        printOneToN(4);
 
     }
 
@@ -185,7 +186,7 @@ public class Main {
         return res;
     }
     /*
-    面试题 6
+    面试题 6 从尾到头打印链表
     借助栈
      */
     public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {//从尾到头打印链表
@@ -204,7 +205,7 @@ public class Main {
     /*
     面试题 7
     重建二叉树，给一个前序和一个中序，建立二叉树
-    前序：1 2 4 7 3 5 6 8  中序 4 7 2 1 5 3 8 6 
+    前序：1 2 4 7 3 5 6 8  中序 4 7 2 1 5 3 8 6
     树：                       1
                            2       3
                          4       5   6
@@ -234,6 +235,15 @@ public class Main {
     /*
     面试题 8
     找出中序遍历中的下一个节点，next指向的是父节点
+     1
+   2   3
+  4 5 6    425163
+
+       1
+   2       3
+  4 5    6   7
+          8
+         9          425169837   比如找8的过程 需向上两层 找父节点有左子树的
      */
     public TreeLinkNode GetNext(TreeLinkNode pNode)//二叉树的下一个节点
     {
@@ -244,13 +254,13 @@ public class Main {
             return pNode;
         }
         while(pNode.next!=null){ //没右子树，则找第一个当前节点是父节点左孩子的节点
-            if(pNode.next.left==pNode) return pNode.next;
+            if(pNode.next.left==pNode) return pNode.next;//节点不是根节点。如果该节点是其父节点的左孩子，则返回父节点,直到当前结点是其父节点的左孩子位置
             pNode = pNode.next;
         }
         return null;   //退到了根节点仍没找到，则返回null
     }
     /*
-    面试题 9
+    面试题 9 用两个栈实现队列
     stack2不为空，stack2的栈顶元素就是最先进入队列的元素
     stack2为空时，把stack1的元素逐个弹出压入stack2
      */
@@ -268,21 +278,20 @@ public class Main {
             while(!stack1.isEmpty()){
                 stack2.push(stack1.pop());
             }
-            //return stack2.pop();//放完后，从出队栈依次将栈顶元素弹出
             return stack2.peek();//放完后，从出队栈依次将栈顶元素弹出
 
         }
     }
     /*
-    面试题 10
+    面试题 10 斐波那契数列
      */
     public int Fibonacci(int n) {//斐波那契数列
         int result [] =new int []{0,1};
         if(n < 2){
             return result[n];
         }
-        int Nminusone = 0;
-        int Nminustwo = 1;
+        int Nminusone = 0;//n-1的意思
+        int Nminustwo = 1;//n-2的意思
         int sum = 0;
         for(int i = 2;i<=n;i++){
             sum = Nminusone + Nminustwo;
@@ -303,9 +312,9 @@ public class Main {
     }
 
     /*
-    面试题 11
+    面试题 11 旋转数组的最小数字
     3 4 5 1 2 是1 2 3 4 5 的一个旋转数组
-    二分查找，如果mid大约left说明前半部分还是大的那个递增区间，最小元素就要去后半部分找
+    二分查找，如果mid大left说明前半部分还是大的那个递增区间，最小元素就要去后半部分找
     特殊情况1 0 1 1 1 和 1 1 1 0 1 都可以是 0 1 1 1 1 的旋转，当三数都一样的话 则顺序查找
      */
     public int minNumberInRotateArray(int [] array) {//旋转数组中的最小数字
@@ -318,7 +327,7 @@ public class Main {
                 mid = right;
             }
             mid = (left + right)/2;
-            if(array[left] ==array[right]&&array[mid]==array[left]){
+            if(array[left] == array[right] && array[mid] == array[left]){
                 return MinInOrder(array,left,right);
             }
             if(array[mid]>=array[left])
@@ -731,12 +740,13 @@ public class Main {
         if (null == head || null == head.next) {
             return head;
         }
+        ListNode next = null;
         ListNode pre = null;
-        while (null != head) {
-            ListNode pNext = head;
-            head = head.next;
-            pNext.next = pre;
-            pre = pNext;
+        while(head != null){
+            next = head.next;
+            head.next = pre;
+            pre = head;
+            head = next;
         }
         return pre;
     }
@@ -1356,7 +1366,6 @@ public class Main {
             dp[i] = Math.max(dp[i-1] + array[i] ,array[i]);
         }
         for(int j = 0;j < dp.length;j++){
-            System.out.print(dp[j]+" ");
             if(dp[j] > max){
                 max = dp[j];
             }
@@ -1476,7 +1485,7 @@ public class Main {
     }
 
     /* 面试题47 礼物得最大价值
-     * 动态规划
+     * 动态规划 处理好边界
      */
     public static int getMaxValue(int [][] numbers){
         int rows = numbers.length;
@@ -1513,15 +1522,12 @@ public class Main {
             }
             else{
                 sb=new StringBuffer(sb.substring(sb.indexOf(str)+1));//如果重复了 就从这个重复得字符串开始截取 如 abc又遇到了a 就截取bc
-                System.out.println(sb.toString());
                 sb.append(str);
-                System.out.println(sb);
             }
             if(sb.length() > max){
                 max=sb.length();
             }
         }
-
         return max;
     }
     /* 面试题49 丑数
@@ -1850,6 +1856,38 @@ public class Main {
         return Math.abs(TreeDepth(root.right) - TreeDepth(root.left)) <= 1 && IsBalanced_Solution(root.left) && IsBalanced_Solution(root.right);
     }
 
+    /* 面试题 55 最小深度
+     *
+     */
+    public int minDepth(TreeNode root) {
+        if(root == null)
+            return 0;
+        if(root.left == null && root.right ==null)//左右皆空，为叶子节点
+            return 1;
+        int min_depth = Integer.MAX_VALUE;
+
+        if (root.left != null) {
+            min_depth = Math.min(minDepth(root.left), min_depth);
+        }
+        if (root.right != null) {
+            min_depth = Math.min(minDepth(root.right), min_depth);
+        }
+        return min_depth + 1;
+    }
+
+    /* 面试题 55 最大深度
+     *
+     */
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        } else {
+            int left_height = maxDepth(root.left);
+            int right_height = maxDepth(root.right);
+            return Math.max(left_height, right_height) + 1;
+        }
+    }
+
     /* 面试题56 数组中数字出现的次数（只出现一次的数字 两次）
      * 一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
      * 因为是找出两个，找出一个很好找 直接异或运算 最后的值就是那个只出现一次的数字
@@ -1982,18 +2020,10 @@ public class Main {
         return res;
     }
 
-
-    public String LeftRotateString(String str,int n) {//左旋转字符串
-        if(str.equals(""))return "";
-        StringBuffer sb = new StringBuffer();
-        for(int i = n;i<str.length();i++){
-            sb.append(str.charAt(i));
-        }
-        for(int i =0;i<n;i++){
-            sb.append(str.charAt(i));
-        }
-        return sb.toString();
-    }
+    /* 面试题 58 翻转字符串
+    例如，“I am a student.” -> “student. a am I”
+    用好sb就可以了
+     */
     public static String ReverseSentence(String str) {//翻转单词顺序列
         if(str==null || str.length()<=0)
             return "";
@@ -2002,7 +2032,7 @@ public class Main {
         }
         String [] strArr = str.split(" ");
         StringBuffer sb = new StringBuffer();
-        for(int i = 0;i<strArr.length;i++){
+        for(int i = 0;i < strArr.length;i++){
             StringBuffer temp = new StringBuffer(strArr[i]);
             temp.reverse();
             sb.append(temp);
@@ -2010,6 +2040,79 @@ public class Main {
         }
         sb.reverse();
         return sb.toString().substring(1);
+    }
+
+    /* 面试题 58 翻转字符串
+    变型 左旋转字符串 S=”abcdefg”,要求输出循环左移2位后的结果，即“cdefgab”
+    先分成两个部分 分别旋转 ba gfedc 再合在一起旋转 得到 cdefgab
+     */
+    public String LeftRotateString(String str,int n) {//左旋转字符串
+//        if(str.equals(""))return "";
+//        StringBuffer sb = new StringBuffer();
+//        for(int i = n;i < str.length();i++){
+//            sb.append(str.charAt(i));
+//        }
+//        for(int i = 0;i < n;i++){
+//            sb.append(str.charAt(i));
+//        }
+//        return sb.toString();
+        if(str == null || str.length() == 0){
+            return str;
+        }
+
+        int len = str.length();
+
+        if(len > 0 && n > 0 && n < len){
+            char firstStart = str.charAt(0);
+            char firstEnd = str.charAt(n - 1);
+            char secondStart = str.charAt(n);
+            char secondEnd = str.charAt(len-1);
+
+            reverse(firstStart, firstEnd);
+            reverse(secondStart, secondEnd);
+            reverse(firstStart, secondEnd);
+        }
+
+        return str;
+    }
+
+    public void reverse(char begin, char end){
+
+        while(begin < end){
+            char c = begin;
+            begin = end;
+            end = c;
+
+            begin++;
+            end--;
+        }
+    }
+
+    /* 面试题 59 队列的最大值
+    输入 [2,3,4,2,6,2,5,1],3 针对数组{2,3,4,2,6,2,5,1}的滑动窗口有以下6个： {[2,3,4],2,6,2,5,1}， {2,[3,4,2],6,2,5,1}，
+    {2,3,[4,2,6],2,5,1}，{2,3,4,[2,6,2],5,1}， {2,3,4,2,[6,2,5],1}， {2,3,4,2,6,[2,5,1]}。
+    双端队列，用来记录每个窗口的最大值下标（注意是下标值）队列头存的是最大值，因为头有可能会滑出去，所有需要尾部也存后来的数据，如果当前值
+    大于已存在的尾部值，那么这个尾部就没必要继续存在了（不可能成为最大值了）
+     */
+    public static ArrayList<Integer> maxInWindows(int [] num, int size)//滑动窗口的最大值
+    {
+        ArrayList<Integer> result = new ArrayList<>();
+        if (num == null || num.length == 0 || size <= 0 || num.length < size) {
+            return result;
+        }
+        LinkedList<Integer> list = new LinkedList<>();
+        for(int i = 0;i<num.length;i++){
+            while(!list.isEmpty() && num[list.peekLast()] < num[i]){
+                list.pollLast();
+            }
+            list.add(i);
+            if(list.peekFirst() == i - size){
+                list.pollFirst();
+            }
+            if(i >= size - 1)
+                result.add(num[list.peekFirst()]);
+        }
+        return result;
     }
 
     public boolean isContinuous(int [] numbers) {//扑克牌顺子
@@ -2054,7 +2157,7 @@ public class Main {
         boolean ans = (n>0)&&((sum+=Sum_Solution(n-1))>0);
         return sum;
     }
-    public static int Add(int num1,int num2) {//不用加减乘除做加法
+    public static int Add(int num1,int num2) {//不用加减除做加法
         int sum = 0;
         int add = 0;
         int count = 0;
@@ -2113,28 +2216,6 @@ public class Main {
         return B;
     }
 
-    public static ArrayList<Integer> maxInWindows(int [] num, int size)//滑动窗口的最大值
-    {
-        ArrayList<Integer> result = new ArrayList<>();
-        if (num == null || num.length == 0 || size <= 0 || num.length < size) {
-            return result;
-        }
-        //双端队列，用来记录每个窗口的最大值下标
-        //[2,3,4,2,6,2,5,1],3
-        LinkedList<Integer> list = new LinkedList<>();
-        for(int i = 0;i<num.length;i++){
-            while(!list.isEmpty() && num[list.peekLast()] < num[i]){
-                list.pollLast();
-            }
-            list.add(i);
-            if(list.peekFirst() == i - size){
-                list.pollFirst();
-            }
-            if(i >= size - 1)
-                result.add(num[list.peekFirst()]);
-        }
-        return result;
-    }
 
     public static class TreeLinkNode {
         int val;
