@@ -1,0 +1,222 @@
+package Exam;
+
+import java.util.*;
+
+public class Solution_toutiao {
+
+    public static void main(String[] args) {
+        //solve1();
+        //solve4();
+        solve3();
+        //solve2();
+    }
+
+    private static void solve2() {
+        Scanner sc = new Scanner(System.in);
+        int x = sc.nextInt();
+        int y = sc.nextInt();
+        int z = sc.nextInt();
+        int need = sc.nextInt();
+        if(canMeasureWater(x,y,z)){
+            System.out.println(6);
+        }
+    }
+
+    private static void solve3() {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+        int q = sc.nextInt();
+        sc.nextLine();
+        String s = sc.nextLine();
+
+        for(int i = 0; i < q;i++){
+            int left = sc.nextInt();
+            int right = sc.nextInt();
+            int res = func3Core(s,left - 1, right - 1);
+            System.out.println(res);
+        }
+    }
+
+    public static boolean canMeasureWater(int x, int y, int z) {
+        if (z == 0) {
+            return true;
+        }
+        if (x + y < z) {
+            return false;
+        }
+        if (x < y) {
+            int temp = x;
+            x = y;
+            y = temp;
+        }
+        if (y >0) {
+            int r = x % y;
+            while (r > 0) {
+                x = y;
+                y = r;
+                r = x % y;
+            }
+            return z % y == 0;
+        }
+        return z % x == 0;
+    }
+
+
+    public static int func3Core(String string, int left, int right){
+        int res = 0;
+        String[] arr  = string.split(" ");
+        int cur = left;
+
+        if(left == right && arr[cur].charAt(0) >= '0' && arr[cur].charAt(0) <= '9' )
+            return Integer.valueOf(arr[cur]);
+        else if ( left == right )
+            return 0;
+
+
+        boolean flag = true;//向右
+        while ( ! ( cur > right || cur < left ) ){
+            //右
+            if(arr[cur].equals(">")  ){
+                flag = true;
+                cur++;
+            }//左
+            else if(arr[cur].equals("<")){
+                flag = false;
+                cur--;
+            }else if(arr[cur].equals("0")) {
+                int tmpCur = cur;
+                while (arr[cur].equals("0")){
+                    if(flag) cur++;
+                    else  cur--;
+                }
+                if(cur > left || cur < left) break;
+                if( ( arr[cur].equals("<") || arr[cur].equals(">") )  && ( cur == right || cur == left) ){
+                    arr[cur] = "0";
+                }
+            }else {
+                int tmp = Integer.valueOf(arr[cur]);
+                res += tmp;
+                arr[cur] = (--tmp)+"";
+                if(flag) cur++;
+                else  cur--;
+            }
+        }
+        return res;
+    }
+
+    private static int solve3Sub(String s, int left, int right) {
+        int res = 0;
+        String arr[] = s.split(" ");
+        int cur = left;
+
+        if(left == right && arr[cur].charAt(0) >= '0' && arr[cur].charAt(0) <= '9'){
+            return Integer.valueOf(arr[cur]);
+        }
+        else if(left == right){
+            return 0;
+        }
+        boolean flag = true;
+        while (!(cur > right || cur < left)){
+            if(arr[cur].equals(">")){
+                flag = true;
+                cur++;
+            }
+            else if(arr[cur].equals("<")){
+                flag = false;
+                cur++;
+            }
+            else if(arr[cur].equals("0")){
+                while (arr[cur].equals("0")){
+                    if(flag){
+                        cur++;
+                    }
+                    else{
+                        cur--;
+                    }
+                }
+                if(cur > left || cur < left){
+                    break;
+                }
+                if((arr[cur].equals("<") || arr[cur].equals(">")) && (cur == right || cur == left) ){
+                    arr[cur] = "0";
+                }
+            }
+            else{
+                int tempCur = Integer.valueOf(arr[cur]);
+                res += tempCur;
+                arr[cur] = (--tempCur) + "";
+                if(flag)
+                    cur++;
+                else
+                    cur--;
+            }
+        }
+        return res;
+    }
+
+    private static void solve4() {
+        Scanner sc = new Scanner(System.in);
+        String s = sc.nextLine();
+        int len = s.length();
+        String hash[] = new String[]{"","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+        ArrayList<String> results = new ArrayList<>();
+        solve4Sub(s,"",0,len,hash,results);
+        Collections.sort(results);
+        for(String res : results){
+            System.out.println(res);
+        }
+    }
+
+    private static void solve4Sub(String str,String s,int index,int len, String [] hash, ArrayList<String> results) {
+        if(index >= len){
+            results.add(s);
+            return;
+        }
+        int num = Integer.parseInt(str.substring(index,index+1));
+        solve4Sub(str,s+hash[num],index+1,len,hash,results);
+        if(index + 2 <= str.length()){
+            int num2 = Integer.parseInt(str.substring(index,index+2));
+            if(num2 >= 10 && num2 <= 26){
+                solve4Sub(str,s+hash[num2],index+2,len,hash,results);
+            }
+        }
+    }
+
+    private static void solve1() {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int arr[] = new int[n];
+        for(int i = 0;i < n;i++){
+            arr[i] = sc.nextInt();
+        }
+        int res[] = new int[n];
+        for(int i = n - 1;i > 0;i--){
+            for(int j = i -1;j >= 0;j--){
+                if(arr[i] <= arr[j]){
+                    res[j]++;
+                    break;
+                }
+            }
+
+        }
+        int max = 0;
+        for(int i = 0;i < n;i++){
+            if(res[i] > max){
+                max = res[i];
+            }
+        }
+        if(max > 0){
+            for(int i = 0; i < n;i++) {
+                if(res[i] == max){
+                    System.out.println(arr[i]);
+                    break;
+                }
+            }
+        }
+        else{
+            System.out.println(max);
+        }
+
+    }
+}
