@@ -1,0 +1,434 @@
+package leetcode100;
+
+import java.util.*;
+
+public class Main_50_100 {
+
+    public static void main(String[] args) {
+        int a[] = new int[]{2,3,1,1,0};
+        System.out.println(canJump(a));
+    }
+
+    /* 题号51 N皇后
+    输入: 4
+    输出: [
+     [".Q..",  // 解法 1
+      "...Q",
+      "Q...",
+      "..Q."],
+
+     ["..Q.",  // 解法 2
+      "Q...",
+      "...Q",
+      ".Q.."]
+    ]
+    解释: 4 皇后问题存在两个不同的解法。 同一直线竖线对角线不能同时存在皇后
+     */
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> result = new ArrayList<List<String>>();
+        queens(result, n, 1, new String[n], new int[n + 1], new int[2 * n + 1], new int[2 * n + 1]);
+        return result;
+    }
+
+    /**
+     * 从1行开始，逐行扫描
+     * 同行判断：单调递增，不作处理
+     * 同列判断：j列未被占用，colums[i]=1，表示j列已被占用
+     * 左下判断：i+j未被占用，位置坐标特点：x + y恒定
+     * 右下判断：i-j+n未被占用，位置坐标特点：x - y恒定
+     */
+    public void queens(List<List<String>> result, int n, int i, String[] lines,
+                int[] columns, int[] lDown, int[] rDown) {
+        if (i > n) {
+            // 数据复制，防止篡改
+            result.add(new ArrayList<String>(Arrays.asList(lines)) );
+            return;
+        }
+        for (int j = 1; j <= n; j++) {
+            if (columns[j] == 0 && lDown[i + j] == 0 && rDown[i - j + n] == 0) {
+                // 设置占用，i行j列
+                char[] line = new char[n];
+                Arrays.fill(line, '.');
+                line[j - 1] = 'Q';
+                lines[i - 1] = new String(line);
+                // 同列设置、左下设置、右下设置
+                columns[j] = lDown[i + j] = rDown[i - j + n] = 1;
+                // 继续i+1行，逐行扫描
+                queens(result, n, i + 1, lines, columns, lDown, rDown);
+                // 数据清理，结构复用
+                columns[j] = lDown[i + j] = rDown[i - j + n] = 0;
+            }
+        }
+    }
+
+    /* 题号52
+    同上题，就是返回解决方案的个数
+     */
+    public int totalNQueens(int n) {
+        List<List<String>> result = new ArrayList<List<String>>();
+        queens(result, n, 1, new String[n], new int[n + 1], new int[2 * n + 1], new int[2 * n + 1]);
+        return result.size();
+    }
+
+    /* 题号 53 最大子序和
+    给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+    示例:
+    输入: [-2,1,-3,4,-1,2,1,-5,4],
+    输出: 6
+    解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
+     */
+    public int maxSubArray(int[] nums) {
+        int maxSum=nums[0];
+        int dp[] =new int[nums.length];
+        dp[0]=nums[0];
+        for(int i = 1;i < nums.length;i++){
+            dp[i] = Math.max(dp[i-1]+nums[i], nums[i]);
+        }
+        for(int k = 0;k < nums.length;k++){
+            if(dp[k] > maxSum){
+                maxSum = dp[k];
+            }
+        }
+        return maxSum;
+    }
+
+    /* 题号 54 螺旋矩阵
+    给定一个包含 m x n 个元素的矩阵（m 行, n 列），请按照顺时针螺旋顺序，返回矩阵中的所有元素。
+     */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> results = new ArrayList<>();
+        if(matrix.length == 0) {
+            return results;
+        }
+        int rows = matrix.length-1;
+        int cols = matrix[0].length-1;
+        int start = 0;
+        while(start < rows && start < cols){
+            printMatrixClockWisely(matrix,start,rows,cols,results);
+            start++;
+            rows--;
+            cols--;
+        }
+        //行数为奇数，还剩一行最后
+        if (start == rows) {
+            for (int k = start; k<= cols; k++){
+                results.add(matrix[start][k]);
+            }
+        } else if (start == cols) {//列数为奇数，还剩一行最后
+            for (int n = start; n<= rows; n++)
+                results.add(matrix[n][start]);
+        }
+        return results;
+    }
+
+    private void printMatrixClockWisely(int[][] matrix, int start, int rows, int cols, List<Integer> result) {
+        for(int i = start;i <= cols;i++){
+            result.add(matrix[start][i]);
+        }
+        for(int j = start+1;j <= rows;j++){
+            result.add(matrix[j][cols]);
+        }
+        for(int i = cols-1;i >= start;i--){
+            result.add(matrix[rows][i]);
+        }
+        for(int j = rows-1;j > start;j--){
+            result.add(matrix[j][start]);
+        }
+    }
+
+    /* 55. 跳跃游戏
+    给定一个非负整数数组，你最初位于数组的第一个位置。
+
+    数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+    判断你是否能够到达最后一个位置。
+
+    输入: [2,3,1,1,4]
+    输出: true
+    解释: 从位置 0 到 1 跳 1 步, 然后跳 3 步到达最后一个位置。
+    把每个为0的位置放入list中，然后从0位置开始往前遍历，看看是否有跨不过去该0的情况
+     */
+    public static boolean canJump(int[] nums) {
+        int len = nums.length-1;
+        if(len == 0)
+            return true;
+        List<Integer> zero = new ArrayList<Integer>();
+        for(int i=len;i>=0;i--){
+            if(nums[i] == 0)
+                zero.add(i);
+        }
+        if(zero.size()==0)
+            return true;
+        boolean flag = true;
+        for(int zeroPosition: zero){
+            flag = false;
+            int index = zeroPosition;
+            while(index >= 0){
+                if((nums[index]>(zeroPosition-index))||(nums[index]>=(zeroPosition-index)&&zeroPosition==len)){
+                    flag = true;
+                    break;
+                }
+                index--;
+            }
+            if(flag == false)break;
+        }
+        return flag;
+    }
+
+    /* 题号56 合并区间
+    输入: [[1,3],[2,6],[8,10],[15,18]]
+    输出: [[1,6],[8,10],[15,18]]
+     */
+    public List<Interval> merge(List<Interval> intervals) {
+        List<Interval> res = new ArrayList<Interval>();
+        Collections.sort(intervals, (a, b) -> (a.start - b.start));
+        for(Interval list : intervals){
+            if(res.isEmpty())
+                res.add(list);
+            else if(list.start <= res.get(res.size()-1).end){
+                res.get(res.size()-1).end = Math.max(list.end, res.get(res.size()-1).end);
+            }
+            else{
+                res.add(list);
+            }
+        }
+        return res;
+    }
+
+    /* 题号 58. 最后一个单词的长度
+    给定一个仅包含大小写字母和空格 ' ' 的字符串，返回其最后一个单词的长度。
+    如果不存在最后一个单词，请返回 0 。
+     */
+    public int lengthOfLastWord(String s) {
+        String [] arr = s.split("\\s+");
+        if(arr.length==0)
+            return 0;
+        else
+            return arr[arr.length-1].length();
+    }
+
+    /* 题号 59. 螺旋矩阵 II
+    输入: 3
+    输出:
+    [
+    [ 1, 2, 3 ],
+    [ 8, 9, 4 ],
+    [ 7, 6, 5 ]
+    ]  模拟一遍过程
+     */
+    public static int[][] generateMatrix(int n) {
+        int[][] matrix = new int[n][n];
+        int u = 0, d = n - 1, l = 0, r = n - 1;
+        int count = 1;
+        while(true) {
+            for(int i = l; i <= r; i++) matrix[u][i] = count++;
+            if(++u > d) break;
+
+            for(int i = u; i <= d; i++) matrix[i][r] = count++;
+            if(--r < l) break;
+
+            for(int i = r; i >= l; i--) matrix[d][i] = count++;
+            if(--d < u) break;
+
+            for(int i = d; i >= u; i--) matrix[i][l] = count++;
+            if(++l > r) break;
+        }
+        return matrix;
+    }
+
+    /* 题号60 第k个排列
+    调用 k 次 31题
+     */
+    public String getPermutation(int n, int k) {
+        StringBuilder sb = new StringBuilder();
+        int[] nums = new int[n];
+        for (int i = 1; i <= n; i++){
+            nums[i] = i;
+        }
+        for (int i = 1; i < k; i++) {
+            nextPermutation(nums);
+        }
+        for (int i = 0; i < nums.length; i++) {
+            sb.append(nums[i]);
+        }
+        return sb.toString();
+    }
+
+    public static void nextPermutation(int[] nums) {
+        int index = -1;
+        for(int i = nums.length-1;i > 0;i--){
+            if(nums[i] > nums[i-1]){
+                index = i - 1;
+                break;
+            }
+        }
+        if(index>-1){
+            for(int j = nums.length-1;j > index;j--){
+                if(nums[j] > nums[index]){
+                    swap(nums, index, j);
+                    break;
+                }
+            }
+        }
+        reverseArray(nums, index + 1);
+    }
+    private static void reverseArray(int[] nums, int index) {
+        // TODO Auto-generated method stub
+        int i=index;int j=nums.length-1;
+        while(i<j){
+            swap(nums, i, j);
+            i++;j--;
+        }
+    }
+    private static void swap(int[] nums, int index, int j) {
+        // TODO Auto-generated method stub
+        int temp=nums[index];
+        nums[index]=nums[j];
+        nums[j]=temp;
+    }
+
+    /* 题号 61 旋转链表
+    旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+    输入: 1->2->3->4->5->NULL, k = 2
+    输出: 4->5->1->2->3->NULL
+    首尾相连变成环，然后断链，新头节点指向该断链位置的下一个节点做为新的头节点
+     */
+    public ListNode rotateRight(ListNode head, int k) {
+        if (head == null)
+            return null;
+        ListNode dummyHead = new ListNode(0);
+        dummyHead.next = head;
+        ListNode cur = dummyHead;
+        int length = 0;
+        while(cur.next != null){
+            cur = cur.next;
+            length++;
+        }
+        cur.next = dummyHead.next;
+        int count = length - k % length;
+        while(count != 0){
+            cur = cur.next;
+            count--;
+        }
+        ListNode newHead = cur.next;
+        cur.next = null;
+        return newHead;
+    }
+
+    /* 题号 62. 不同路径
+    机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+    问总共有多少条不同的路径？
+    初始化dp i = 0 j = 0 为 1 dp[i][j] 怎么来的？ dp[i][j-1] 和 dp[i-1][j]
+     */
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        dp[0][0] = 1;
+        for(int i = 0;i < m;i++){
+            for(int j = 0;j < n;j++){
+                if(i == 0||j == 0){
+                    dp[i][j] = 1;
+                }
+                else
+                    dp[i][j] = dp[i-1][j] + dp[i][j-1];
+            }
+        }
+        return dp[m-1][n-1];
+    }
+
+    /* 题号 63. 不同路径II
+    机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+    问总共有多少条不同的路径？
+    多了个障碍物数组，为1代表障碍物
+    初始化dp 不能和原来一样了，如下的这种 j = 0 可不全是 1 了，最后一行根本不可能达到
+    0 0
+    1 1
+    0 0
+     */
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int m=obstacleGrid.length;
+        int n=obstacleGrid[0].length;
+        if(obstacleGrid[0][0]==1){ //开始就有障碍物的情况
+            return 0;
+        }
+        int[][] dp = new int[m][n];
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(obstacleGrid[i][j]==1){
+                    dp[i][j]=0;
+                }
+                else{
+                    if(i==0&&j==0){
+                        dp[i][j]=1;
+                    }
+                    else if(i==0){
+                        dp[i][j]=dp[i][j-1];
+                    }
+                    else if(j==0){
+                        dp[i][j]=dp[i-1][j];
+                    }
+                    else
+                        dp[i][j]=dp[i-1][j]+dp[i][j-1];
+                }
+            }
+        }
+        return dp[m-1][n-1];
+    }
+
+    /* 题号 64. 最小路径和
+    请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。 说明：每次只能向下或者向右移动一步。
+    输入:
+    [
+      [1,3,1],
+      [1,5,1],
+      [4,2,1]
+    ]
+    输出: 7
+    解释: 因为路径 1→3→1→1→1 的总和最小。 和上题做法差不多
+     */
+    public int minPathSum(int[][] grid) {
+        int m=grid.length;
+        int n=grid[0].length;
+        int dp[][]=new int[m][n];
+        dp[0][0]=grid[0][0];
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(i==0&&j==0){
+                    dp[i][j]=grid[i][j];
+                }
+                else if(i==0){
+                    dp[i][j]=dp[i][j-1]+grid[i][j];
+                }
+                else if(j==0){
+                    dp[i][j]=dp[i-1][j]+grid[i][j];
+                }
+                else{
+                    dp[i][j]=Math.min(dp[i][j-1]+grid[i][j],dp[i-1][j]+grid[i][j]);
+                }
+            }
+        }
+
+        return dp[m-1][n-1];
+    }
+
+
+    public class Interval {
+        int start;
+        int end;
+        Interval() { start = 0; end = 0; }
+        Interval(int s, int e) { start = s; end = e; }
+    }
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode(int x) { val = x; }
+    }
+
+
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x; }
+    }
+}
